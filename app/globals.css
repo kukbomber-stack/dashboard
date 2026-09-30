@@ -1,0 +1,2480 @@
+:root{
+  --sidebar:#211710; --sidebar-hover:#332318; --sidebar-active:#46311F;
+  --ink:#1F1210; --mut:#5A1F20; --line:#E2E4E3; --bg:#F6F7F9; --card:#FFFFFF;
+  --navy:#6B2A2A; --teal:#74883F; --copper:#AD7A4C; --gold:#C08752;
+  --warn:#8C5A20; --warn-bg:#F5E9D8; --neg:#7A2E2E; --pos:#5E7A34; --pos-bg:#EAEFDD;
+  --glass-hi: rgba(250,246,239,0.90);   /* карточки/таблицы поверх */
+  --glass-mid: rgba(248,242,232,0.72);  /* общая "стеклянная" подложка контента */
+  --glass-border: rgba(255,250,240,0.68);
+  --glass-shadow: 0 12px 40px rgba(20,12,4,0.32), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 46px 70px -46px rgba(255,255,255,0.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background:
+    linear-gradient(180deg, rgba(20,13,7,0.15), rgba(10,8,6,0.35)),
+    url('/bg-texture.jpg') center/cover no-repeat fixed;
+  background-color:#171310;
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+
+/* ---- Layout ---- */
+.shell{display:flex;min-height:100vh}
+.sidebar{
+  width:248px;color:#D7DBE2;flex:none;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:10;
+  background:rgba(20,22,31,0.80); backdrop-filter:blur(22px) saturate(140%); -webkit-backdrop-filter:blur(22px) saturate(140%);
+  border-right:1px solid rgba(255,255,255,0.08);
+}
+.sb-brand{display:flex;align-items:center;gap:11px;padding:20px 20px 16px}
+.sb-logo{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;background:#F5F4F0;border:1px solid rgba(255,255,255,0.25)}
+.sb-brand .t{font-weight:700;color:#fff;font-size:15px;line-height:1.2}
+.sb-brand .s{font-size:11px;color:#9BA2AF}
+.sb-nav{padding:8px 12px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;flex:1}
+.sb-nav a{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:8px;font-size:14px;color:#C7CBD6}
+.sb-nav a:hover{background:rgba(255,255,255,0.08);color:#fff}
+.sb-nav a.active{background:rgba(255,255,255,0.14);color:#fff;font-weight:600}
+.sb-nav a .ic{width:18px;height:18px;flex:none;opacity:.85}
+.sb-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,0.1);font-size:11.5px;color:#8991A0}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column;margin-left:248px;padding:0 20px}
+.topbar{
+  padding:14px 28px;display:flex;justify-content:space-between;align-items:center;gap:16px;position:sticky;top:0;z-index:5;
+  background:rgba(255,255,255,0.72); backdrop-filter:blur(18px) saturate(160%); -webkit-backdrop-filter:blur(18px) saturate(160%);
+  border-bottom:1px solid var(--glass-border);
+}
+.topbar .ttl{font-weight:700;font-size:15px}
+.topbar .as{font-size:12.5px;color:var(--mut)}
+.topbar .as b{color:var(--ink)}
+
+.content{
+  padding:24px 30px 52px; max-width:1560px; width:100%; margin:14px auto 22px;
+  background:var(--glass-mid); backdrop-filter:blur(36px) saturate(185%); -webkit-backdrop-filter:blur(36px) saturate(185%);
+  border:1px solid var(--glass-border); border-radius:26px; box-shadow:var(--glass-shadow);
+  position:relative; overflow:hidden;
+}
+.content::before{
+  content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background:linear-gradient(115deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 22%, rgba(255,255,255,0) 42%);
+}
+
+h1{font-size:24px;margin:2px 0 4px;font-weight:800;color:var(--ink)}
+/* Строка заголовка страницы: h1 слева, служебная дата справа на той же строке */
+.page-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.page-head-meta{font-size:12.5px;color:var(--mut);white-space:nowrap}
+.lede{color:var(--mut);max-width:980px;font-size:14px;font-weight:700}
+h2{font-size:17px;margin:24px 0 9px;font-weight:800;color:var(--ink)}
+.plain{color:var(--mut);font-size:13px;margin:-2px 0 12px;max-width:1040px;font-weight:700}
+.plain b{color:var(--ink)}
+
+/* ---- Cards (стеклянные плитки поверх общей стеклянной подложки) ---- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px}
+.two-col-charts{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;margin-top:10px}
+.two-col-charts > div{display:flex;flex-direction:column;min-width:0}
+.two-col-charts > div > .chart{flex:1;display:flex;flex-direction:column;justify-content:space-between}
+@media screen and (max-width:900px){html:not(.pf-on) .two-col-charts{grid-template-columns:1fr} }
+/* Без backdrop-filter: он обрезает всплывающие подсказки по границам плашки */
+.kpi{background:var(--glass-hi);border:1px solid var(--glass-border);border-radius:12px;padding:15px 17px;box-shadow:0 2px 10px rgba(20,12,4,0.06), inset 0 1px 0 rgba(255,255,255,0.7)}
+.kpi .cap{font-size:13px;color:var(--mut)}
+.kpi .val{font-size:30px;font-weight:700;letter-spacing:-.5px;margin-top:2px}
+.kpi .val small{font-size:15px;font-weight:600;color:var(--mut)}
+.kpi .sub{font-size:12px;color:var(--mut);margin-top:3px}
+.kpi .sub b{color:var(--ink)}
+.kpi.hl{background:linear-gradient(135deg,#4A1F1F,#74883F 58%,#C08752);border:none;color:#fff;box-shadow:0 6px 20px rgba(74,31,31,0.35)}
+.kpi.hl .cap,.kpi.hl .sub{color:#EEE3CE}
+.kpi-expand-btn{display:flex;align-items:center;gap:2px;margin-top:8px;font-size:11.5px;font-weight:700;color:var(--navy);background:rgba(255,255,255,0.5);border:1px solid var(--glass-border);border-radius:6px;padding:3px 9px}
+.kpi-expand-btn .collapsible-chev{font-size:13px}
+.kpi-expand-btn:hover{background:#fff}
+.kpi.hl .kpi-expand-btn{color:#fff;background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.35)}
+.kpi-expand-body{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:12px;color:var(--mut)}
+.kpi-expand-body b{color:var(--ink)}
+.kpi.hl .kpi-expand-body{border-top-color:rgba(255,255,255,0.3);color:#EEE3CE}
+.kpi.hl .kpi-expand-body b{color:#fff}
+
+/* ---- Tables ---- */
+table{width:100%;border-collapse:collapse;background:var(--glass-hi);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:12px;overflow:hidden;font-size:13.5px;box-shadow:0 2px 10px rgba(20,12,4,0.06)}
+th{text-align:left;padding:8px 11px;background:rgba(241,243,245,0.75);font-weight:600;border-bottom:1px solid var(--line)}
+td{padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+th.grp{text-align:center;background:rgba(240,231,220,0.8);color:var(--navy)}
+tr.total td{font-weight:700;background:rgba(250,251,252,0.7)}
+.neg{color:var(--neg);font-weight:600}.pos{color:var(--pos);font-weight:600}.dim{color:#8A6B52}
+.warncell{color:var(--warn);font-weight:600}
+
+/* ---- Chart (pure CSS bars) ---- */
+.chart{background:var(--glass-hi);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:12px;padding:16px 18px;box-shadow:0 2px 10px rgba(20,12,4,0.06)}
+.bars{display:flex;align-items:flex-start;gap:3%;padding-top:6px}
+.bar{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;color:var(--mut);text-align:center}
+.bar-col{width:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.bar .stack{width:100%;max-width:54px;display:flex;flex-direction:column-reverse;border-radius:4px 4px 0 0;overflow:hidden}
+.bar .stack i{display:block;width:100%}
+.bar .stack .z{background:var(--teal)}.bar .stack .x{background:var(--copper)}
+.bar.pale .stack i{background:#C9D6D5}
+.bar b{font-size:11.5px;color:var(--ink)}
+
+.progress{background:var(--glass-hi);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:12px;padding:16px 18px;box-shadow:0 2px 10px rgba(20,12,4,0.06)}
+.pr-row{margin:9px 0 3px;font-size:13px;display:flex;justify-content:space-between}
+.pr-bar{height:15px;border-radius:8px;background:#EDF0F2;overflow:hidden}
+.pr-fill{height:100%;border-radius:8px}
+.pr-note{font-size:12.5px;color:var(--mut);margin-top:11px}
+.pr-note b{color:var(--ink)}
+
+.rigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:13px}
+.rig{background:var(--glass-hi);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:12px;padding:15px 17px;box-shadow:0 2px 10px rgba(20,12,4,0.06)}
+.rig h3{font-size:15px;display:flex;align-items:center;gap:8px}
+.rig .st{margin-left:auto;font-size:11.5px;padding:2px 9px;border-radius:99px;font-weight:600}
+.st-ok{background:var(--pos-bg);color:var(--pos)}.st-warn{background:var(--warn-bg);color:var(--warn)}
+.rig .place{color:var(--mut);font-size:12.5px;margin:2px 0 10px}
+.rig .nums{display:flex;gap:16px}
+.rig .n b{font-size:20px;display:block}.rig .n span{font-size:11.5px;color:var(--mut)}
+.rig .note{font-size:12px;color:var(--warn);margin-top:9px}
+
+.lamp{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.l-g{background:#22A06B}.l-y{background:#E7A500}.l-r{background:#D4472F}.l-d{background:#C9BEA9}
+.downtime-bar-track{display:inline-block;width:60px;height:7px;background:#EDE6D6;border-radius:4px;overflow:hidden;vertical-align:middle;margin-right:8px}
+.downtime-bar-fill{display:block;height:100%;background:var(--warn);border-radius:4px}
+
+/* ГРР -> Пробоподготовка и аналитика: графики по центру блока, текст - обычным выравниванием */
+.core-centered .chart{display:flex;flex-direction:column;align-items:center}
+
+/* Ограничиваем ширину длинных абзацев, чтобы строки не тянулись через весь экран */
+.text-center-block{max-width:860px}
+.core-centered p.plain{max-width:860px}
+
+.check-list{list-style:none;margin:0;padding:0}
+.check-list li{position:relative;padding-left:22px;margin-top:6px}
+.check-list li:first-child{margin-top:0}
+.check-list li::before{content:"✓";position:absolute;left:0;top:0;color:var(--teal);font-weight:800;font-size:13px}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.c-ok{background:var(--pos-bg);color:var(--pos)}.c-run{background:#F0E7DC;color:var(--navy)}.c-due{background:var(--warn-bg);color:var(--warn)}.c-open{background:#F1EAE0;color:#6B5744}
+
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:600}
+.b-act{background:var(--pos-bg);color:var(--pos)}.b-sub{background:var(--warn-bg);color:var(--warn)}.b-rev{background:#F0E7DC;color:var(--navy)}
+
+.notebox{background:var(--glass-hi);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-left:3px solid var(--navy);border-radius:10px;padding:13px 17px;box-shadow:0 2px 10px rgba(20,12,4,0.06)}
+.notebox li{margin:6px 0 6px 18px;color:#374151;font-size:13.5px}
+.notebox b{color:var(--ink)}
+.srcs{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:10px}
+.src{background:var(--glass-hi);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:9px;padding:11px 14px;font-size:13px;box-shadow:0 2px 10px rgba(20,12,4,0.06)}
+.src .st{float:right;font-size:11.5px;color:var(--pos);font-weight:600}
+.src .st.off{color:var(--mut)}
+.src .what{color:var(--mut);font-size:12px}
+.miles .mile{display:flex;gap:13px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px;align-items:baseline}
+.miles .mile:last-child{border:none}
+.miles .d{flex:none;width:104px;font-weight:700;font-variant-numeric:tabular-nums}
+.miles .who{margin-left:auto;color:var(--mut);font-size:12px;flex:none}
+.miles .mile.key .d{color:var(--navy)}
+
+@media screen and (max-width:820px){html:not(.pf-on) .sidebar{display:none}
+html:not(.pf-on) .main{margin-left:0}
+html:not(.pf-on) .content{padding:20px 16px 50px;margin:12px 10px 24px;border-radius:16px}
+}
+
+/* ---- Горизонтальные вкладки-навигация по разделам страницы ---- */
+.section-tabs{
+  display:flex; gap:6px; flex-wrap:wrap; margin:16px 0 26px;
+  padding:5px; background:rgba(255,255,255,0.35); border:1px solid var(--glass-border);
+  border-radius:12px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+}
+.section-tab{
+  border:none; background:transparent; color:var(--mut); font-size:13px; font-weight:700;
+  padding:8px 14px; border-radius:9px; white-space:nowrap; transition:background .15s,color .15s;
+}
+.section-tab:hover{ background:rgba(255,255,255,0.5); color:var(--ink); }
+.section-tab.active{ background:var(--navy); color:#fff; box-shadow:0 2px 8px rgba(90,31,32,0.3); }
+@media screen and (max-width:820px){html:not(.pf-on) .section-tabs{ overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; }
+}
+
+.tab-panel h2:first-child{ margin-top:4px; }
+
+/* ---- Сворачиваемые блоки ---- */
+.collapsible{background:var(--glass-hi);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:12px;box-shadow:0 2px 10px rgba(20,12,4,0.06);margin-bottom:12px;overflow:hidden}
+/* Отбивка, если сворачиваемый блок идёт сразу за парой графиков */
+.two-col-charts + .collapsible{margin-top:22px}
+.collapsible-head{width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;background:transparent;border:none;text-align:left}
+.collapsible-head:hover{background:rgba(255,255,255,0.4)}
+.collapsible-chev{display:inline-block;transition:transform .18s;font-size:18px;color:var(--navy);line-height:1}
+.collapsible-chev.open{transform:rotate(90deg)}
+.collapsible-title{font-weight:700;font-size:14.5px;color:var(--ink)}
+.collapsible-sub{font-size:12.5px;color:var(--mut)}
+.collapsible-action{margin-left:auto;font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap}
+.collapsible-body{padding:0 16px 16px}
+.collapsible-preview{padding:0 16px 14px;font-size:13px;color:var(--mut)}
+.collapsible table{border:none;box-shadow:none;background:transparent}
+
+/* ---- Панели вкладок: неактивные скрыты на экране, но существуют в DOM (нужно для печати) ---- */
+.tab-panel{display:none}
+.tab-panel.is-active{display:block}
+.print-only{display:none}
+
+/* ---- Кнопка печати ---- */
+.print-btn{
+  font-size:12.5px;font-weight:600;color:var(--navy);background:rgba(255,255,255,0.7);
+  border:1px solid var(--glass-border);border-radius:7px;padding:5px 11px;white-space:nowrap;
+}
+.print-btn:hover{background:#fff}
+
+/* ================= ПЕЧАТЬ / ЭКСПОРТ В PDF ================= */
+@media print{
+  @page{ size:A4; margin:12mm 12mm; }
+
+  /* Столбики, донаты и заливки должны печататься - иначе графики пустые */
+  .bar .stack i, .bars div[title="план"], .bars div[title="факт"], .pr-fill, .pr-bar,
+  .lamp, .chip, .badge, .kpi.hl, svg, svg *, [style*="conic-gradient"], [style*="background"],
+  .gantt-bar, .gantt-today, .downtime-bar-fill, .downtime-bar-track{
+    -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+  }
+
+  /* Убираем всё лишнее */
+  .no-print, .sidebar, .print-btn, .section-tabs, .collapsible-action, .collapsible-chev, .rates-ticker{ display:none !important; }
+
+  /* Плоский светлый фон вместо текстуры и стекла - чтобы не съедало тонер и читалось */
+  html, body{ background:#fff !important; color:#000 !important; }
+  .shell{ display:block !important; }
+  .main{ display:block !important; margin-left:0 !important; }
+  .content{
+    max-width:none !important; width:auto !important; margin:0 !important; padding:0 !important;
+    background:#fff !important; border:none !important; border-radius:0 !important;
+    box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+  }
+  .content::before{ display:none !important; }
+
+  .topbar{
+    position:static !important; background:#fff !important; border-bottom:1.5px solid #333 !important;
+    padding:0 0 8px !important; margin-bottom:14px !important; backdrop-filter:none !important;
+  }
+  .topbar .ttl{ font-size:17px; }
+
+  /* Все вкладки раскрыты и подписаны */
+  .tab-panel{ display:block !important; break-inside:auto; }
+  .tab-print-title{
+    display:block !important; font-size:15px; font-weight:800; color:#000;
+    border-top:1px solid #999; margin:18px 0 8px; padding-top:8px;
+  }
+  .tab-panel:first-of-type .tab-print-title{ border-top:none; margin-top:4px; }
+
+  /* Сворачиваемые блоки раскрыты */
+  .collapsible-body{ display:block !important; }
+  .collapsible-preview{ display:none !important; }
+  .collapsible{ background:#fff !important; border:1px solid #bbb !important; box-shadow:none !important; break-inside:avoid; }
+  .kpi-expand-btn{ display:none !important; }
+  .kpi-expand-body{ display:block !important; }
+
+  /* Карточки и таблицы - простые рамки */
+  .kpi, table, .chart, .progress, .notebox, .rig, .src{
+    background:#fff !important; border:1px solid #bbb !important; box-shadow:none !important;
+    backdrop-filter:none !important; -webkit-backdrop-filter:none !important; break-inside:avoid;
+  }
+  .gantt{ background:#fff !important; border:1px solid #bbb !important; box-shadow:none !important; overflow:visible !important; }
+  .kpi.hl{ background:#fff !important; color:#000 !important; border:1.5px solid #555 !important; }
+  .kpi.hl .cap, .kpi.hl .sub{ color:#333 !important; }
+  th{ background:#eee !important; }
+  h1{ font-size:19px; } h2{ font-size:14.5px; margin:14px 0 6px; break-after:avoid; }
+  .lede, .plain{ color:#333 !important; }
+  table{ font-size:11px; } td, th{ padding:5px 7px; }
+  .miles .mile{ break-inside:avoid; }
+  img{ max-width:100% !important; break-inside:avoid; }
+  a[href]:after{ content:""; }
+}
+
+/* ---- Две колонки: график слева, таблица/текст справа ---- */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.split > *{min-width:0}
+.split table{font-size:12.5px}
+.split table td, .split table th{padding:6px 8px}
+@media screen and (max-width:1100px){html:not(.pf-on) .split{grid-template-columns:1fr} }
+
+/* Перенос длинных строк в ячейках и подписях */
+td, th, .plain, .lede, .notebox li{overflow-wrap:anywhere}
+
+/* ---- Читаемость таблиц: зебра и мягкие вертикальные разделители ---- */
+tbody tr:nth-child(odd):not(.total) td{ background:rgba(120,95,60,0.045); }
+td + td, th + th{ border-left:1px solid rgba(120,95,60,0.13); }
+tbody tr:hover:not(.total) td{ background:rgba(120,95,60,0.09); }
+.total td{ border-top:1.5px solid rgba(120,95,60,0.3); }
+
+@media print{
+  tbody tr:nth-child(odd):not(.total) td{ background:#f4f1ec !important; }
+  td + td, th + th{ border-left:1px solid #ccc !important; }
+}
+
+/* ---- Диаграмма Ганта (вкладка «График проекта») ---- */
+.gantt{background:var(--glass-hi);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:12px;padding:14px 16px 10px;box-shadow:0 2px 10px rgba(20,12,4,0.06);overflow-x:auto;position:relative}
+.gantt-head{display:flex}
+.gantt-label{flex:0 0 300px;min-width:300px;display:flex;align-items:center;gap:6px}
+.gantt-track{flex:1;position:relative;min-width:320px}
+.gantt-track-head{height:22px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.gantt-year{position:absolute;top:0;height:100%;font-size:11px;font-weight:700;color:var(--mut);border-left:1px dashed var(--line);padding-left:5px;box-sizing:border-box}
+.gantt-section{border-bottom:1px solid var(--line)}
+.gantt-section:last-child{border-bottom:none}
+.gantt-row{display:flex;align-items:center;min-height:34px}
+.gantt-row-sub{min-height:27px}
+.gantt-toggle{background:none;border:none;text-align:left;display:flex;align-items:center;gap:6px;font:inherit;color:inherit;width:100%;padding:4px 8px 4px 0}
+.gantt-toggle:disabled{cursor:default}
+.gantt-code{flex:none;font-size:10.5px;font-weight:700;color:var(--copper);font-variant-numeric:tabular-nums;width:36px}
+.gantt-name{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.25}
+.gantt-row-sub .gantt-label{padding-left:20px}
+.gantt-row-sub .gantt-name{font-weight:600;font-size:12px;color:#4A3527}
+.gantt-bar{position:absolute;top:50%;transform:translateY(-50%);height:12px;border-radius:4px;background:var(--teal);box-shadow:0 1px 3px rgba(0,0,0,0.15)}
+.gantt-bar.sub{height:9px;background:#9BAE6E}
+.gantt-bar.key{background:var(--warn)}
+.gantt-today{position:absolute;top:0;bottom:0;width:0;border-left:1.5px dashed var(--navy);opacity:.75;z-index:2}
+.gantt-today-overlay{position:absolute;inset:14px 16px 10px;display:flex;pointer-events:none;z-index:3}
+.gantt-flash{animation:gantt-flash-kf 2.2s ease-out}
+@keyframes gantt-flash-kf{0%{background:rgba(192,135,82,0.28)}100%{background:transparent}}
+.gantt-dates{flex:0 0 132px;min-width:132px;text-align:right;font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums;padding-left:8px;white-space:nowrap}
+.gantt-milestone-note{font-size:11.5px;color:var(--warn);padding:1px 0 7px 44px}
+.gantt-milestone-note b{color:var(--ink)}
+.gantt-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--mut);margin:10px 2px 0}
+.gantt-legend i{display:inline-block;width:14px;height:9px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+@media screen and (max-width:820px){html:not(.pf-on) .gantt-label{flex:0 0 180px;min-width:180px}
+html:not(.pf-on) .gantt-dates{display:none}
+}
+
+/* ---- Курс валют и золота (топбар) ---- */
+.rates-ticker{font-size:12px;font-weight:700;color:var(--mut);display:inline-flex;align-items:center;gap:8px;padding:5px 12px;background:rgba(255,255,255,0.5);border:1px solid var(--glass-border);border-radius:20px;white-space:nowrap}
+.rates-dot{width:6px;height:6px;border-radius:50%;background:#5C7A3A;flex:none;animation:rates-pulse 2.4s ease-in-out infinite}
+@keyframes rates-pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.rates-sep{opacity:.5}
+.rates-chip{position:relative;display:inline-flex;align-items:center;padding:2px 6px;border-radius:8px;overflow:hidden}
+.rates-spark{position:absolute;inset:0;width:100%;height:100%;opacity:.32;pointer-events:none}
+.rates-txt{position:relative;z-index:1}
+@media screen and (max-width:720px){html:not(.pf-on) .rates-ticker{ display:none; } }
+
+/* ---- Обзор: карта слева, плашки справа ---- */
+.overview-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:18px;align-items:stretch;margin-top:6px}
+.overview-map{display:flex;flex-direction:column;gap:10px;min-width:0}
+.map-frame{flex:1;min-height:0;border-radius:14px;overflow:hidden;border:1px solid var(--glass-border);box-shadow:0 2px 10px rgba(20,12,4,0.08);background:#fff;display:flex}
+.map-frame img{width:100%;height:100%;object-fit:contain;display:block}
+.lic-legend{background:var(--glass-hi);border:1px solid var(--glass-border);border-radius:12px;padding:10px 13px}
+.lic-legend-head{font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:8px}
+.lic-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 10px;padding:4px 0;border-top:1px solid var(--line);font-size:12px}
+.lic-row:first-of-type{border-top:none}
+.lic-name{font-weight:800;color:var(--ink)}
+.lic-num{color:var(--copper);font-weight:700;font-size:11.5px;white-space:nowrap}
+
+.overview-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;grid-auto-flow:row dense;gap:10px;min-width:0;align-content:stretch}
+/* Первые три плашки - цели проекта: жёстко ставим их в первую колонку, строки 1-3 */
+.overview-cards > :nth-child(1){grid-area:1 / 1}
+.overview-cards > :nth-child(2){grid-area:2 / 1}
+.overview-cards > :nth-child(3){grid-area:3 / 1}
+.overview-cards .kpi{padding:11px 13px}
+.overview-cards .kpi .val{font-size:26px}
+.overview-cards .kpi .sub{font-size:11px}
+@media screen and (max-width:1180px){html:not(.pf-on) .overview-split{grid-template-columns:1fr}
+html:not(.pf-on) .overview-cards{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+html:not(.pf-on) .overview-cards > :nth-child(1), html:not(.pf-on) .overview-cards > :nth-child(2), html:not(.pf-on) .overview-cards > :nth-child(3){grid-area:auto}
+}
+/* Три графика в ряд (ГРР -> Бурение) */
+.three-col-charts{display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.75fr) minmax(0,1.25fr);gap:16px;align-items:stretch;margin-top:10px}
+.three-col-charts > div{display:flex;flex-direction:column;min-width:0}
+.three-col-charts > div > .chart{flex:1;display:flex;flex-direction:column;justify-content:space-between}
+.three-col-charts + .collapsible{margin-top:22px}
+@media screen and (max-width:1180px){html:not(.pf-on) .three-col-charts{grid-template-columns:1fr 1fr} }
+/* Подпись значения над столбиком: не переносится и не растягивает колонку */
+.bar-val{font-size:10px;line-height:1;margin-bottom:3px;white-space:nowrap;font-weight:800}
+@media screen and (max-width:820px){html:not(.pf-on) .three-col-charts{grid-template-columns:1fr} }
+
+/* ---- Карточки документов (протоколы, справки) ---- */
+.docs{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:10px}
+.doc{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--glass-hi);border:1px solid var(--glass-border);border-radius:11px;text-decoration:none;color:inherit;transition:background .15s,border-color .15s}
+.doc:hover{background:#fff;border-color:var(--copper)}
+.doc-current{border-left:3px solid var(--teal)}
+.doc-ico{flex:none;font-size:9.5px;font-weight:800;letter-spacing:.5px;color:#fff;background:var(--navy);border-radius:5px;padding:5px 6px}
+.doc-body{display:flex;flex-direction:column;min-width:0;gap:2px}
+.doc-title{font-size:13px;font-weight:800;color:var(--ink);line-height:1.25}
+.doc-meta{font-size:11.5px;color:var(--mut);font-weight:700}
+.doc-dl{margin-left:auto;flex:none;font-size:11.5px;font-weight:800;color:var(--copper);white-space:nowrap}
+
+.status-blocks{display:flex;flex-wrap:wrap;gap:12px;margin:4px 0 16px}
+
+/* Кнопка «показать ещё» под таблицей с предпросмотром */
+.preview-more{display:inline-flex;align-items:center;gap:4px;margin:8px 0 2px;font-size:12px;font-weight:800;color:var(--copper);background:none;border:none;padding:4px 0}
+.preview-more:hover{color:var(--navy)}
+@media print{ .preview-more{display:none !important} }
+
+/* Компактная строка документа: иконка, название, дата, кнопка скачивания */
+.docs-row{display:flex;flex-wrap:wrap;gap:8px}
+.doc-c{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--glass-hi);border:1px solid var(--glass-border);border-radius:9px;text-decoration:none;color:inherit;transition:background .15s,border-color .15s}
+.doc-c:hover{background:#fff;border-color:var(--copper)}
+.doc-c.is-current{border-left:3px solid var(--teal)}
+.doc-c .ic-pdf{flex:none;font-size:8.5px;font-weight:800;letter-spacing:.4px;color:#fff;background:var(--navy);border-radius:4px;padding:4px 5px;line-height:1}
+.doc-c .t{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.doc-c .t b{font-size:12px;color:var(--ink);white-space:nowrap}
+.doc-c .t span{font-size:10.5px;color:var(--mut);font-weight:700}
+.doc-c .dl{flex:none;font-size:14px;color:var(--copper);font-weight:800;line-height:1}
+
+/* Обзор: карта слева, таблица лицензий справа, плашки под ними */
+.ov-top{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.25fr);gap:16px;align-items:start;margin-top:6px}
+.ov-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:11px;margin-top:14px}
+.ov-cards .kpi{padding:10px 13px}
+.ov-cards .kpi .cap{margin-bottom:2px}
+.ov-cards .kpi .val{font-size:27px;margin:0}
+.ov-cards .kpi .sub{margin-top:3px;font-size:11px}
+.lic-panel{display:flex;flex-direction:column;min-width:0}
+.lic-au{margin-top:auto;padding-top:10px;font-size:12px;color:var(--mut);font-weight:700}
+.lic-au b{color:var(--ink)}
+@media screen and (max-width:1180px){html:not(.pf-on) .ov-top{grid-template-columns:1fr} }
+
+/* Карта на Обзоре: по своей пропорции, без растягивания под высоту таблицы */
+.ov-top{align-items:start}
+.ov-top > .map-frame{display:block;flex:none}
+.ov-top > .map-frame img{height:auto;object-fit:initial}
+
+/* Обзор: компактная таблица по лицензии, выравнивание по карте */
+.ov-top{align-items:stretch}
+.lic-panel{justify-content:flex-start;gap:0}
+.lic-title{margin:9px 0 7px !important;font-size:15.5px}
+.lic-title span{font-size:12px;font-weight:700;color:var(--copper)}
+.lic-table td,.lic-table th{padding:5px 8px;font-size:12px}
+.lic-table th{font-size:11.5px}
+.lic-table .mid{text-align:center;font-variant-numeric:tabular-nums}
+.lic-sites{margin-top:9px;font-size:12px;color:var(--mut);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.lic-sites > b{color:var(--ink)}
+.lic-chip{display:inline-flex;align-items:baseline;gap:5px;padding:3px 8px;background:var(--glass-hi);border:1px solid var(--glass-border);border-radius:20px;font-weight:700;color:var(--ink);font-size:11.5px}
+.lic-chip i{font-style:normal;font-weight:600;color:var(--mut);font-size:10.5px}
+.lic-au{margin-top:auto;padding-top:10px;font-size:11.5px}
+
+/* Документы на «Статусе задач» - одной строкой без переноса */
+.docs-row{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+.docs-row .doc-c{flex:0 0 auto}
+.docs-row .doc-c .t b{max-width:190px;overflow:hidden;text-overflow:ellipsis}
+/* Документы: пять карточек всегда в одну строку, ужимаются по ширине */
+.docs-row{overflow:visible}
+.docs-row .doc-c{flex:1 1 0;min-width:0;padding:7px 9px;gap:7px}
+.docs-row .doc-c .t{min-width:0;flex:1}
+.docs-row .doc-c .t b{max-width:none;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px}
+.docs-row .doc-c .t span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Обзор: карточка лицензий вровень с картой */
+.ov-top{align-items:stretch}
+.ov-top > .map-frame{align-self:start}
+.lic-card{display:flex;flex-direction:column;min-width:0;background:var(--glass-hi);border:1px solid var(--glass-border);border-radius:14px;padding:10px 12px;box-shadow:0 2px 10px rgba(20,12,4,0.06)}
+.lic-tabs{padding:3px;margin-bottom:8px}
+.lic-tabs .section-tab{font-size:11.5px;padding:5px 9px}
+.lic-title{font-size:14.5px;font-weight:800;color:var(--ink);margin-bottom:7px}
+.lic-title span{font-size:11.5px;font-weight:700;color:var(--copper)}
+.lic-table{font-size:12px}
+.lic-table th,.lic-table td{padding:5px 8px}
+.lic-table th.ctr{text-align:center}
+.lic-table .lic-sub{background:rgba(116,136,63,0.10);color:var(--ink);font-size:12px}
+.lic-au{margin-top:auto;padding-top:9px;font-size:11.5px;color:var(--mut);font-weight:700}
+.lic-au b{color:var(--ink)}
+.lic-au span{font-weight:400}
+
+/* Статус задач: документы в одну строку */
+.docs-row{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+.docs-row .doc-c{flex:none}
+.docs-row .doc-c .t b{font-size:11.5px}
+
+/* Карта и карточка лицензий - одна пропорция, значит одинаковая высота */
+.ov-top > .map-frame{align-self:stretch;aspect-ratio:704/565}
+.ov-top > .map-frame img{height:100%;object-fit:cover}
+.lic-card{aspect-ratio:1480/998;overflow:auto}
+.lic-table th,.lic-table td{padding:4px 8px}
+
+/* Таблица план-факт по объектам */
+.pf-table{font-size:12px}
+.pf-table th,.pf-table td{padding:5px 7px}
+.pf-table th.ctr{text-align:center}
+.pf-table .pf-lic td{font-weight:800;background:rgba(116,136,63,0.07)}
+
+/* Подсказка в плашке и мелкая приписка к заголовку */
+.kpi .cap{position:relative}
+.kpi-hint{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;margin-left:5px;border-radius:50%;border:1px solid currentColor;font-size:9px;font-weight:800;font-style:italic;cursor:help;opacity:.65;vertical-align:1px}
+.kpi-hint:hover{opacity:1}
+.h2-note{font-size:12px;font-weight:700;color:var(--mut);margin-left:8px}
+
+/* Кнопка переноса задачи в «Выполнено» */
+.task-move{background:none;border:1px solid var(--glass-border);border-radius:7px;padding:4px 8px;font-size:11.5px;font-weight:800;color:var(--teal);white-space:nowrap}
+.task-move:hover{background:#fff;border-color:var(--teal)}
+
+/* ---- Доска задач: две колонки с перетаскиванием ---- */
+/* Колонки одинаковой высоты: зона для броска на всю высоту доски, мимо не промахнёшься */
+.board{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}
+.board-col{background:rgba(255,255,255,0.32);border:1px solid var(--glass-border);border-radius:12px;padding:10px;min-height:220px;transition:background .15s,border-color .15s}
+.board-col.is-over{background:rgba(116,136,63,0.12);border-color:var(--teal)}
+.board-head{font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.board-head span{font-weight:800;color:#fff;background:var(--navy);border-radius:20px;padding:1px 7px;font-size:11px}
+.board-head-done span{background:var(--teal)}
+.board-empty{font-size:12px;color:var(--mut);padding:14px 6px;text-align:center}
+.task-card{background:var(--glass-hi);border:1px solid var(--glass-border);border-left:3px solid var(--copper);border-radius:10px;padding:9px 11px;margin-bottom:9px;cursor:grab}
+.task-card:active{cursor:grabbing}
+.task-card.is-dragging{opacity:.45}
+.task-card.is-done{border-left-color:var(--teal)}
+.task-card.is-done .task-body{color:var(--mut)}
+.task-head{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.task-head b{font-size:12.5px;color:var(--ink)}
+.task-head .chip{margin-left:auto;flex:none}
+.task-body{font-size:12px;color:var(--mut);line-height:1.4}
+.task-foot{display:flex;gap:8px;margin-top:6px;font-size:11.5px;color:var(--mut);font-weight:700}
+.task-due{margin-left:auto;white-space:nowrap;color:var(--copper)}
+.task-card .task-move{margin-top:7px}
+@media screen and (max-width:900px){html:not(.pf-on) .board{grid-template-columns:1fr} }
+@media print{ .board{grid-template-columns:1fr 1fr} .task-card{break-inside:avoid} }
+
+
+
+/* Подсказка «i»: своё всплывающее окно, прижато к правому краю плашки */
+.kpi-hint{position:relative}
+.kpi-hint::after{content:attr(data-tip);position:absolute;top:calc(100% + 7px);left:-6px;width:max-content;max-width:240px;
+  background:#211710;color:#F4EEE2;font-size:11.5px;font-weight:600;font-style:normal;line-height:1.35;
+  padding:7px 9px;border-radius:8px;box-shadow:0 6px 18px rgba(20,12,4,0.25);z-index:20;
+  opacity:0;visibility:hidden;transition:opacity .12s;pointer-events:none;text-align:left;white-space:normal}
+.kpi-hint:hover::after,.kpi-hint:focus::after{opacity:1;visibility:visible}
+.kpi.hl .kpi-hint::after{background:#F4EEE2;color:#211710}
+
+/* Карта лицензий: вписываем целиком, без обрезки */
+.lic-map{border-radius:12px;overflow:hidden;border:1px solid var(--glass-border);box-shadow:0 2px 10px rgba(20,12,4,0.06);background:#fff}
+.lic-map img{width:100%;height:auto;display:block}
+
+/* Обзор: плашки по три в ряд, чтобы не оставалось одиночной */
+.ov-cards{grid-template-columns:repeat(7,minmax(0,1fr));gap:9px}
+@media screen and (max-width:1100px){html:not(.pf-on) .ov-cards{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))} }
+
+/* Переносы: не оставляем одиночные слова на строке */
+p, li, td, th, .lede, .plain, .sub, .task-body{text-wrap:pretty}
+.kpi-link{color:inherit;text-decoration:underline;text-underline-offset:2px;font-weight:700}
+
+/* Семь плашек в одну линию: компактнее шрифты, чтобы влезали */
+.ov-cards .kpi{padding:9px 10px}
+.ov-cards .kpi .cap{font-size:10.5px;line-height:1.25}
+.ov-cards .kpi .val{font-size:21px}
+.ov-cards .kpi .val small{font-size:10.5px}
+.ov-cards .kpi .sub{font-size:10px;line-height:1.3}
+.pf-table{font-size:11.5px}
+.pf-table th,.pf-table td{padding:4px 5px}
+@media screen and (max-width:1400px){html:not(.pf-on) .ov-cards{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media screen and (max-width:1000px){html:not(.pf-on) .ov-cards{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))} }
+
+/* Карточка лицензий: без внутренней прокрутки, строка «Содержание Au» всегда видна */
+.lic-card{aspect-ratio:auto;overflow:visible}
+.ov-top > .map-frame{align-self:start;aspect-ratio:704/565}
+
+/* Подсказка «i» не должна обрезаться краем плашки */
+.kpis, .kpi, .ov-cards{overflow:visible}
+.kpi{position:relative}
+
+/* Графики в паре выравниваем по центру, чтобы не оставалось пустоты снизу */
+.two-col-charts > div > .chart{justify-content:center}
+
+/* Карта заявок на лицензии - компактнее */
+.lic-map{max-width:900px;margin-left:auto;margin-right:auto}
+.kpi-hint::after{max-width:220px}
+
+/* Обзор: карта и карточка лицензий строго одной высоты */
+.ov-top{align-items:stretch}
+.ov-top > .map-frame{align-self:stretch;aspect-ratio:auto;display:block}
+.ov-top > .map-frame img{width:100%;height:100%;object-fit:cover;object-position:center}
+/* Карточка чуть плотнее, чтобы кроп карты был минимальным */
+.lic-card{padding:9px 11px}
+.lic-tabs{margin-bottom:6px}
+.lic-table th,.lic-table td{padding:3.5px 7px}
+.lic-au{padding-top:7px}
+
+/* Подсказка у последней плашки в ряду разворачивается влево, чтобы не выходить за край */
+.kpis .kpi:last-child .kpi-hint::after,
+.ov-cards .kpi:last-child .kpi-hint::after{left:auto;right:-6px}
+
+/* Подсказка в заголовке столбца таблицы */
+.th-hint{position:relative;display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;margin-left:5px;
+  border-radius:50%;border:1px solid currentColor;font-size:9px;font-weight:800;font-style:italic;cursor:help;opacity:.6;vertical-align:1px}
+.th-hint:hover{opacity:1}
+.th-hint::after{content:attr(data-tip);position:absolute;top:calc(100% + 7px);right:-6px;width:max-content;max-width:230px;
+  background:#211710;color:#F4EEE2;font-size:11.5px;font-weight:600;font-style:normal;line-height:1.35;text-align:left;
+  padding:7px 9px;border-radius:8px;box-shadow:0 6px 18px rgba(20,12,4,0.25);z-index:20;
+  opacity:0;visibility:hidden;transition:opacity .12s;pointer-events:none;white-space:normal}
+.th-hint:hover::after{opacity:1;visibility:visible}
+
+/* Подсказка по умолчанию разворачивается вправо; у последних плашек в ряду - влево */
+.kpi-hint::after{left:-6px;right:auto}
+.kpis .kpi:last-child .kpi-hint::after,
+.ov-cards .kpi:last-child .kpi-hint::after,
+.ov-cards .kpi:nth-last-child(2) .kpi-hint::after{left:auto;right:-6px}
+
+/* Подсветка колонки при перетаскивании: видно, куда можно бросить */
+.board-col.is-over{box-shadow:inset 0 0 0 2px var(--teal)}
+.board-col .board-drop{display:none}
+.board-col.is-over .board-drop{display:flex;align-items:center;justify-content:center;
+  margin-top:8px;padding:14px;border:2px dashed var(--teal);border-radius:10px;
+  font-size:12px;font-weight:800;color:var(--teal)}
+
+/* ---- Обзор: карта + список лицензий + сводка под ними ---- */
+.lic-list{display:flex;flex-direction:column;gap:8px;min-width:0}
+.lic-block{background:var(--glass-hi);border:1px solid var(--glass-border);border-left:3px solid var(--teal);border-radius:10px;padding:7px 10px}
+.lic-block-head{font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:5px}
+.lic-block-head span{font-size:10.5px;font-weight:700;color:var(--copper);margin-left:6px}
+.lic-block-body{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:12px;align-items:start}
+.lic-mini{font-size:10.5px;width:100%}
+.lic-mini th,.lic-mini td{padding:2px 5px;border:1px solid var(--line)}
+.lic-mini th{background:rgba(116,136,63,0.10);color:var(--ink);font-weight:800}
+.lic-mini th.ctr{text-align:center}
+.lic-sites{margin:0;padding-left:16px;font-size:11px;color:var(--ink);line-height:1.45}
+.lic-sites li{margin-bottom:1px}
+.lic-site-note{color:var(--mut);font-weight:400;margin-left:5px;font-size:10px}
+
+.ov-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:14px;
+  background:var(--glass-hi);border:1px solid var(--glass-border);border-radius:12px;padding:12px 14px}
+.sum-item{text-align:center;padding:0 4px;border-left:1px solid var(--line)}
+.sum-item:first-child{border-left:none}
+.sum-cap{font-size:11px;font-weight:700;color:var(--mut);line-height:1.25;margin-bottom:5px}
+.sum-val{font-size:26px;font-weight:800;color:var(--copper);line-height:1.05;letter-spacing:-0.5px}
+.sum-val span{color:var(--ink)}
+.sum-val small{font-size:12px;font-weight:700;color:var(--mut)}
+.sum-note{font-size:10px;color:var(--mut);margin-top:4px;line-height:1.3}
+.sum-note a{color:var(--copper);text-decoration:underline;text-underline-offset:2px}
+@media screen and (max-width:1200px){html:not(.pf-on) .ov-summary{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+html:not(.pf-on) .sum-item:nth-child(3n+1){border-left:none} }
+
+/* Обзор: карта показывается целиком, не растягивается под высоту списка лицензий */
+.ov-top{align-items:start}
+.ov-top > .map-frame{align-self:start;display:block;height:auto}
+.ov-top > .map-frame img{width:100%;height:auto;object-fit:initial}
+/* Список участков: обычный левый список, а не прижатый к правому краю */
+.lic-sites{display:block;text-align:left;list-style:decimal;list-style-position:outside}
+.lic-sites li{display:list-item;text-align:left}
+.lic-site-note{display:block;margin-left:0}
+
+/* Обзор: единая таблица по всем лицензиям */
+.lic-all{font-size:11px;width:100%}
+.lic-all th,.lic-all td{padding:3px 6px;border:1px solid var(--line);vertical-align:top}
+.lic-all th{background:rgba(116,136,63,0.10);color:var(--ink);font-weight:800;vertical-align:middle}
+.lic-all th.ctr{text-align:center}
+.lic-all td.lic-name{background:rgba(116,136,63,0.05);min-width:120px}
+.lic-all td.lic-name b{display:block;font-size:11.5px;color:var(--ink);line-height:1.25}
+.lic-all .lic-num{display:block;font-size:10px;font-weight:700;color:var(--copper);margin-top:2px}
+.lic-all .lic-row-start td{border-top:2px solid var(--glass-border)}
+.lic-all .lic-sites{margin:0;padding-left:14px;font-size:10.5px;line-height:1.4}
+.lic-all .lic-site-note{display:block;color:var(--mut);font-size:9.5px}
+
+/* Обзор: таблица лицензий - шире, строки ниже */
+.ov-top{grid-template-columns:minmax(0,0.85fr) minmax(0,1.5fr);gap:14px}
+.lic-all{table-layout:fixed}
+.lic-all td.lic-name{width:25%;min-width:0}
+.lic-all td.yr,.lic-all th:nth-child(2){width:7%;white-space:nowrap;text-align:center}
+.lic-all th.num,.lic-all td.num{width:9.5%}
+.lic-all td:last-child,.lic-all th:last-child{width:21%}
+.lic-all td.lic-name b{font-size:11px;hyphens:none;word-break:normal;overflow-wrap:normal}
+.lic-sites-inline{font-size:10.5px;line-height:1.35;color:var(--ink)}
+
+/* Обзор: карта растянута до нижнего края таблицы.
+   Изображение вписывается целиком, а поля залиты цветом самой карты (#DBD2C3),
+   поэтому стыка не видно и ничего не обрезается. */
+.ov-top{align-items:stretch}
+.ov-top > .map-frame{align-self:stretch;display:flex;height:auto;background:#DBD2C3}
+.ov-top > .map-frame img{width:100%;height:100%;object-fit:contain;object-position:center}
+
+/* Обзор: карта крупнее, таблица уже */
+.ov-top{grid-template-columns:minmax(0,1.05fr) minmax(0,1.3fr)}
+.lic-all td.lic-name{width:24%}
+.lic-all td:last-child,.lic-all th:last-child{width:18%}
+.lic-all th.num,.lic-all td.num{width:10%}
+
+/* Иконки в сводной строке */
+.sum-head{display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:5px}
+.sum-icon{flex:none;color:var(--copper);opacity:.75}
+.sum-head .sum-cap{margin-bottom:0;text-align:left}
+
+/* Обзор: компактная таблица без пустот, участки в первом столбце */
+.lic-all td.lic-name{width:30%}
+.lic-all td.yr,.lic-all th:nth-child(2){width:9%}
+.lic-all th.num,.lic-all td.num{width:12%}
+.lic-all td:last-child,.lic-all th:last-child{width:auto}
+.lic-all .lic-sites-inline{display:block;margin-top:2px;font-size:10px;color:var(--mut);line-height:1.3}
+.lic-all td.lic-name b{margin-bottom:0}
+
+/* Сводка: плотнее, значения в одну строку */
+.ov-summary{padding:10px 12px;gap:8px}
+.sum-item{padding:0 2px}
+.sum-val{font-size:22px;white-space:nowrap}
+.sum-val small{font-size:11px}
+.sum-note i{font-style:normal;opacity:.75;font-size:9px}
+.sum-cap{font-size:10.5px}
+.ov-top{gap:12px;margin-top:4px}
+.content{padding-bottom:36px}
+
+/* Столбец «Au, г/т» узкий, значения в плашках не обрезаются */
+.lic-all th:last-child,.lic-all td:last-child{width:9%}
+.sum-item:last-child .sum-val{font-size:18px}
+.sum-item:last-child .sum-val small{font-size:10px}
+.ov-summary{grid-template-columns:repeat(5,minmax(0,1fr)) minmax(0,1.25fr)}
+
+/* Сводка: подписи и примечания строго в одну строку */
+.sum-head{gap:6px}
+.sum-cap{font-size:10px;white-space:nowrap;line-height:1.2}
+.sum-note{white-space:nowrap;font-size:9.5px}
+.sum-icon{width:20px;height:20px}
+.ov-summary{gap:6px;padding:9px 10px}
+.sum-item{padding:0}
+/* Таблица: столбцы ещё уже, лишнего места нет */
+.lic-all th.num,.lic-all td.num{width:11%}
+.lic-all td.yr,.lic-all th:nth-child(2){width:8%}
+.lic-all td.lic-name{width:26%}
+
+/* Таблица: числовые столбцы узкие, как «Год»; свободное место отдано первому столбцу */
+.lic-all td.lic-name,.lic-all th:first-child{width:46%}
+.lic-all td.yr,.lic-all th:nth-child(2){width:8%}
+.lic-all th.num,.lic-all td.num{width:9%}
+.lic-all th:last-child,.lic-all td:last-child{width:10%}
+
+/* Сводка: подписи не слипаются - ширина по длине текста, разделители с отступом */
+.ov-summary{grid-template-columns:1.2fr 1.35fr 0.8fr 1fr 1.25fr 1.2fr;gap:0}
+.sum-item{padding:0 10px}
+.sum-cap{font-size:9.5px}
+
+/* Таблица подстраивается под содержимое: пустого места в столбцах нет */
+.lic-all{table-layout:auto;width:100%}
+.lic-all td.lic-name,.lic-all th:first-child{width:auto}
+.lic-all td.yr,.lic-all th:nth-child(2),
+.lic-all th.num,.lic-all td.num,
+.lic-all th:last-child,.lic-all td:last-child{width:1%;white-space:nowrap}
+
+/* Карта крупнее, обе колонки одной высоты */
+.ov-top{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);align-items:stretch}
+.ov-top > .map-frame{align-self:stretch}
+
+/* Иконка в плашке не липнет к подписи */
+.sum-head{gap:9px}
+.sum-icon{flex:0 0 auto;margin-right:1px}
+
+/* ==== Обзор, v63: итоговая раскладка карта + таблица (перекрывает правила выше) ==== */
+/* Таблица занимает ровно ширину содержимого, всё остальное место отдано карте.
+   Высоту блока задаёт карта (по своим пропорциям), таблица растягивается до её нижнего края.
+   На очень широком экране карта ограничена по высоте, поля заливаются цветом карты. */
+.ov-top{grid-template-columns:minmax(0,1fr) auto;align-items:stretch}
+.ov-top > .lic-list{display:block;height:100%;min-width:0}
+.ov-top .lic-all{table-layout:auto;width:auto;height:100%;font-size:11px}
+.ov-top .lic-all th,.ov-top .lic-all td{width:auto;padding:2px 6px;white-space:nowrap}
+.ov-top .lic-all td{vertical-align:middle}
+/* Первый столбец по ширине самого длинного названия лицензии; участки переносятся */
+.ov-top .lic-all th.c-name{white-space:normal;width:1%}
+.ov-top .lic-all td.lic-name{width:1%;min-width:0;vertical-align:top;white-space:normal}
+.ov-top .lic-all td.lic-name b{font-size:11.5px;white-space:nowrap}
+.ov-top .lic-all .lic-sites-inline{font-size:10.5px;white-space:normal}
+/* Пояснение к значению: второй строкой, мелко, в том же столбце */
+.ov-top .lic-all .v-main{display:block}
+.ov-top .lic-all .v-note{display:block;font-size:9.5px;color:var(--mut);line-height:1.15}
+/* Карта вписана целиком, поля в цвет карты */
+.ov-top > .map-frame{align-self:stretch;position:relative;display:block;height:auto;min-height:0;
+  aspect-ratio:704/565;max-height:720px;width:100%;min-width:0;overflow:hidden;background:#DBD2C3}
+.ov-top > .map-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center}
+@media screen and (max-width:1180px){html:not(.pf-on) .ov-top{grid-template-columns:1fr}
+html:not(.pf-on) .ov-top .lic-all{width:100%}
+}
+
+/* ==== Обзор: печать целиком на одном листе (класс pf-on ставит PrintFit перед печатью) ====
+   Печатная раскладка меняет экран только на время замера (класс pf-sim, он держится
+   доли секунды внутри одного вызова) и в самой печати. Один pf-on экран не трогает:
+   если окно печати закрыли мимо событий и класс остался, кабинет остаётся рабочим. */
+@media print{
+  html.pf-on .sidebar{display:none !important}
+  html.pf-on .shell{display:block !important}
+  html.pf-on .main{margin-left:0 !important;width:1400px !important;max-width:none !important;padding:0 !important}
+  html.pf-on .ov-top{grid-template-columns:minmax(0,1fr) auto !important}
+  html.pf-on .ov-top .lic-all{width:auto !important}
+  html.pf-on .ov-top > .map-frame{max-height:none !important}
+  html.pf-on .ov-summary{grid-template-columns:1.2fr 1.35fr 0.8fr 1fr 1.25fr 1.2fr !important}
+  html.pf-on .sum-item{border-left:1px solid var(--line) !important}
+  html.pf-on .sum-item:first-child{border-left:none !important}
+}
+html.pf-sim .sidebar{display:none !important}
+html.pf-sim .shell{display:block !important}
+html.pf-sim .main{margin-left:0 !important;width:1400px !important;max-width:none !important;padding:0 !important}
+html.pf-sim .ov-top{grid-template-columns:minmax(0,1fr) auto !important}
+html.pf-sim .ov-top .lic-all{width:auto !important}
+html.pf-sim .ov-top > .map-frame{max-height:none !important}
+html.pf-sim .ov-summary{grid-template-columns:1.2fr 1.35fr 0.8fr 1fr 1.25fr 1.2fr !important}
+html.pf-sim .sum-item{border-left:1px solid var(--line) !important}
+html.pf-sim .sum-item:first-child{border-left:none !important}
+@media print{
+  html.pf-on .main{zoom:var(--pf-zoom,0.72)}
+  html.pf-on .ov-top, html.pf-on .ov-summary, html.pf-on table{break-inside:avoid}
+  html.pf-on .ov-top > .map-frame{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ==== Статус задач, v65: узкая колонка «Выполнено» и явная отметка-квадратик ==== */
+.board{grid-template-columns:minmax(0,1fr) minmax(250px,300px);align-items:start}
+.board-col{min-height:0}
+.board-col-done{min-height:120px;border-style:dashed}
+.board-col-done .task-card{padding:7px 10px;margin-bottom:7px}
+.board-col-done .task-head{margin-bottom:0;align-items:center}
+.board-col-done .task-head b{font-size:12px;color:var(--mut);text-decoration:line-through;text-decoration-color:rgba(120,95,60,.45)}
+.task-head{align-items:center}
+.task-check{flex:none;width:18px;height:18px;padding:0;margin:0 2px 0 0;border:1.6px solid var(--copper);border-radius:4px;
+  background:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s}
+.task-check svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .15s}
+.task-check:hover{border-color:var(--teal);box-shadow:0 0 0 3px rgba(116,136,63,.18)}
+.task-check:hover svg{opacity:1;stroke:var(--teal)}
+.task-check:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.task-check.is-on{background:var(--teal);border-color:var(--teal)}
+.task-check.is-on svg{opacity:1;stroke:#fff}
+.task-check.is-on:hover{background:#fff}
+.task-check.is-on:hover svg{stroke:var(--teal)}
+@media screen and (max-width:900px){html:not(.pf-on) .board{grid-template-columns:1fr} }
+@media print{ .board{grid-template-columns:minmax(0,1fr) 260px} }
+
+/* ==== Лицензии, v67: таблица по годам и блок заявок с картой ==== */
+.lic-years{font-size:11.5px}
+.lic-years th,.lic-years td{padding:3px 6px}
+.lic-years td{vertical-align:middle}
+.lic-apps{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,42%);gap:14px;align-items:end;margin-bottom:14px}
+.lic-apps > div:first-child{display:flex;flex-direction:column;justify-content:flex-end}
+.lic-apps .lic-map{align-self:end;justify-self:stretch;aspect-ratio:1853/1226;position:relative;overflow:hidden;min-width:0;width:auto;max-width:none;margin:0;background:#EFEAE0;border-radius:12px}
+.lic-apps .lic-map img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+@media screen and (max-width:900px){html:not(.pf-on) .lic-apps{grid-template-columns:1fr}
+html:not(.pf-on) .lic-apps .lic-map{aspect-ratio:4/3}}
+
+/* ==== Запасы, v68: плашки в две линии, диаграммы слева, программа справа ==== */
+.kpis-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.res-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,34%);gap:18px;align-items:start}
+.res-charts{display:flex;flex-direction:column;gap:12px}
+.res-charts h3,.res-cols h3{font-size:14px;margin:0 0 6px;color:var(--navy)}
+.res-charts .chart{padding:8px 10px 2px}
+.res-table{font-size:12.5px}
+.res-table th,.res-table td{padding:5px 8px}
+.gkz-strip{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;margin-top:10px;padding:8px 12px;
+  border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.45);font-size:13px}
+.gkz-strip i{font-style:normal;color:#6B4A34;font-size:12px;margin-right:3px}
+@media screen and (max-width:1180px){html:not(.pf-on) .res-cols{grid-template-columns:1fr}
+html:not(.pf-on) .kpis-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ==== ГРР, v69: недельный блок, ссылки-диаграммы, компактные таблицы ==== */
+.sec-h{font-size:14px;margin:14px 0 6px;color:var(--navy)}
+.week-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,24%);gap:14px;align-items:start}
+.week-row > div{min-width:0}
+.week-row .chart{height:auto}
+.chart-link{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-decoration:none;color:inherit;transition:box-shadow .15s,transform .15s}
+.chart-link:hover{box-shadow:0 4px 16px rgba(20,12,4,.14);transform:translateY(-1px)}
+.chart-link-note{font-size:12px;color:var(--copper);text-align:center;line-height:1.3}
+.pf-narrow{font-size:11.5px;width:auto}
+.pf-narrow th,.pf-narrow td{padding:3px 7px;white-space:nowrap}
+.prog-table{font-size:11.5px}
+.prog-table th,.prog-table td{padding:3px 6px;white-space:nowrap}
+@media screen and (max-width:1100px){html:not(.pf-on) .week-row{grid-template-columns:1fr}}
+
+/* ==== Статус задач, v70: протоколы и плашки в одной линии, доска на всю ширину ==== */
+.status-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,260px);gap:14px;align-items:stretch;margin-bottom:18px}
+.docs-box{display:flex;flex-direction:column;justify-content:space-evenly;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.4)}
+.docs-h{font-size:12.5px;margin:0 0 7px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.docs-box .docs-row{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.docs-sep{height:1px;background:var(--line)}
+.status-kpis{display:flex;flex-direction:column;gap:10px}
+.status-kpis .kpi{flex:1}
+.board-work .board-col{min-height:0}
+.task-wide .task-line2{display:flex;align-items:baseline;gap:12px;margin-top:4px}
+.task-wide .task-body{flex:1;min-width:0}
+.task-wide .task-who{flex:none;max-width:32%;font-size:12.5px;color:var(--navy);font-weight:600}
+.task-wide .task-due{flex:none;white-space:nowrap}
+.task-head .task-src{margin-left:auto;font-weight:500}
+.task-head .task-src + .chip{margin-left:0}
+.task-approve{display:block;font-style:normal;font-weight:500;font-size:11.5px;color:var(--mut)}
+.done-zone{margin-top:12px;border:1px dashed var(--line);border-radius:14px;background:rgba(255,255,255,.28)}
+.done-zone.is-over{border-color:var(--teal);background:rgba(116,136,63,.10)}
+.done-head{display:flex;align-items:center;gap:8px;width:100%;padding:10px 14px;background:none;border:0;cursor:pointer;text-align:left}
+.done-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 6px;
+  border-radius:10px;background:var(--teal);color:#fff;font-size:12px;font-weight:700}
+.done-body{padding:0 14px 12px}
+.done-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+@media screen and (max-width:900px){html:not(.pf-on) .status-top{grid-template-columns:1fr}}
+
+/* ==== Персонал и бюджет, v71: таблица затрат и финансирования ==== */
+.budget-table td:nth-child(2){white-space:normal}
+.budget-sub td:nth-child(2){padding-left:18px;color:#4A3527}
+
+/* ==== Обзор, v71: плашки сводки кликабельные ==== */
+a.sum-item{text-decoration:none;color:inherit;transition:background .15s,box-shadow .15s,transform .15s}
+a.sum-item:hover{background:rgba(255,255,255,.55);box-shadow:0 4px 14px rgba(20,12,4,.10);transform:translateY(-1px)}
+a.sum-item:hover .sum-cap{color:var(--copper)}
+a.sum-item:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+/* Шире используем большие экраны */
+.content{max-width:1800px}
+
+/* ==== ГРР, v74: год слева, неделя справа ==== */
+.grr-cols{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:stretch}
+.grr-cols > div{display:flex;flex-direction:column;min-width:0}
+.grr-cols > div > .chart{flex:1}
+.grr-cols .week-row{flex:1}
+.grr-cols .week-row > div{display:flex;flex-direction:column}
+.grr-cols .week-row .chart{flex:1}
+.grr-cols .kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.grr-cols .kpi{padding:11px 13px}
+.grr-cols .kpi .val{font-size:24px}
+.grr-cols .kpi .sub{font-size:11px}
+.kpis-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.week-row-narrow{grid-template-columns:minmax(0,1fr) 150px;gap:10px}
+.week-row-narrow .chart-link-note{font-size:11px}
+/* Таблица план/факт на всю ширину, без пустот */
+.pf-wide{width:100%;font-size:11.5px}
+.pf-wide th,.pf-wide td{padding:4px 8px;white-space:nowrap}
+.pf-wide td:first-child,.pf-wide th:first-child{white-space:normal;width:22%}
+@media screen and (max-width:1250px){html:not(.pf-on) .grr-cols{grid-template-columns:1fr}
+html:not(.pf-on) .week-row-narrow{grid-template-columns:minmax(0,1fr) 180px}}
+
+/* ==== Компактные плашки: «Статус задач» и «Персонал и бюджет» ==== */
+.status-top{align-items:stretch}
+.status-kpis .kpi{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 14px}
+.status-kpis .kpi .val{font-size:26px}
+.status-kpis .kpi .sub{font-size:11.5px}
+.docs-box{justify-content:flex-start}
+.kpis-sm .kpi{padding:11px 14px}
+.kpis-sm .kpi .val{font-size:26px}
+.kpis-sm .kpi .sub{font-size:11.5px}
+/* ==== Лицензии: карта вровень с таблицей заявок, без провала ==== */
+.lic-apps{align-items:stretch}
+.lic-apps .lic-map{align-self:stretch;aspect-ratio:auto;background:#534533}
+.lic-apps .lic-map img{object-fit:contain}
+.grr-cols .kpis-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pf-wide{table-layout:fixed}
+.pf-wide td:first-child,.pf-wide th:first-child{width:20%}
+.pf-wide td,.pf-wide th{overflow:hidden;text-overflow:ellipsis}
+.kpis-sm .kpi{padding:10px 13px}
+.kpis-sm .kpi .cap{font-size:12px}
+.kpis-sm .kpi .val{font-size:24px}
+.kpis-sm .kpi .sub{font-size:11px;margin-top:2px}
+
+/* ==== v75: центрирование значений в таблицах лицензий ==== */
+.ctr-table td,.ctr-table th{text-align:center}
+.ctr-table td:first-child,.ctr-table th:first-child{text-align:left}
+.ctr-table td.num,.ctr-table th.num{text-align:center}
+/* Итоги прямо в заголовке графика */
+.sec-total{font-weight:600;font-size:12px;color:var(--mut);margin-left:8px}
+/* Мини-плашки недели */
+.kpis-mini .kpi{padding:9px 11px}
+.kpis-mini .kpi .cap{font-size:11.5px}
+.kpis-mini .kpi .val{font-size:21px}
+.kpis-mini .kpi .sub{font-size:10.5px;margin-top:1px}
+.grr-cols .kpis-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+/* Статус задач: компактные документы */
+.docs-box{padding:9px 12px;gap:7px}
+.docs-h{font-size:11.5px;margin:0 0 5px}
+.docs-box .doc-c{padding:6px 9px}
+.status-kpis{gap:8px}
+
+/* ==== v75: подсказки в заголовках, две колонки разрезов ==== */
+.tip{position:relative;border-bottom:1px dashed var(--copper);cursor:help}
+.tip::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 7px);width:max-content;max-width:330px;
+  background:#2B1F14;color:#F4EEE2;font-size:12px;font-weight:500;line-height:1.35;padding:8px 10px;border-radius:8px;
+  box-shadow:0 6px 18px rgba(20,12,4,.28);opacity:0;visibility:hidden;transition:opacity .12s;z-index:30;white-space:normal}
+.tip:hover::after{opacity:1;visibility:visible}
+.dir-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+@media screen and (max-width:1100px){html:not(.pf-on) .dir-cols{grid-template-columns:1fr}}
+/* Таблица затрат: без пустот */
+.budget-table{table-layout:fixed;width:100%}
+.budget-table th,.budget-table td{padding:4px 7px}
+.budget-table td:first-child,.budget-table th:first-child{width:3%}
+.budget-table td:nth-child(2),.budget-table th:nth-child(2){width:17%}
+.budget-table td:last-child,.budget-table th:last-child{width:24%;white-space:normal;text-align:left}
+.budget-table td:nth-child(2),.budget-table th:nth-child(2){width:19%}
+.budget-table td:last-child,.budget-table th:last-child{width:28%}
+
+/* ==== v76: подписи пар столбиков и выравнивание блоков ГРР ==== */
+.bar-pair-val{display:flex;flex-direction:column;align-items:center;line-height:1.15;margin-bottom:4px;height:30px;justify-content:flex-end;font-size:9px;letter-spacing:-.2px}
+.bar-pair-val .p{color:#8A7A63}
+.bar-pair-val .sep{display:none}
+.bar-pair-val b{color:var(--ink);font-size:9.5px}
+.bar-pair-val .p{color:#8A7A63}
+.bar-pair-val .sep{color:#BDB2A0}
+.bar-pair-val b{color:var(--ink)}
+.grr-cols .kpis .kpi{min-height:96px;display:flex;flex-direction:column;justify-content:center}
+.chart-eq{min-height:330px;display:flex;flex-direction:column;justify-content:center}
+/* Запасы: три диаграммы и таблица в один ряд */
+.res-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(280px,1.25fr);gap:12px;align-items:start}
+.res-row .chart{padding:6px 8px 2px}
+.res-row h3{font-size:13px;margin:0 0 5px;color:var(--navy)}
+.res-row .res-table{font-size:12px}
+.res-row .res-table th,.res-row .res-table td{padding:4px 6px}
+@media screen and (max-width:1250px){html:not(.pf-on) .res-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media screen and (max-width:800px){html:not(.pf-on) .res-row{grid-template-columns:1fr}}
+
+/* Легенда круговой диаграммы: без растяжки на всю ширину */
+.chart-link .donut-legend,.donut-legend{gap:6px}
+.donut-legend-row,.donut-row{gap:6px !important}
+/* Запасы: ряд диаграмм и таблицы одной высоты */
+.res-row{align-items:stretch}
+.res-row > div{display:flex;flex-direction:column;min-width:0}
+.res-row .chart{flex:1}
+.res-row .res-table{flex:none}
+/* Плашки запасов ещё компактнее */
+.kpis-mini .kpi{padding:8px 11px}
+.kpis-mini .kpi .val{font-size:20px}
+/* Персонал и бюджет: разрезы одной высоты */
+.dir-cols{align-items:stretch}
+.dir-cols > .collapsible{display:flex;flex-direction:column;height:100%}
+.dir-cols > .collapsible > .collapsible-body{flex:1}
+
+/* ==== v78: подписи над столбиками, выравнивание строк плашек ==== */
+.bv{font-size:9px;line-height:1;white-space:nowrap;position:relative;z-index:2;letter-spacing:-.2px}
+.bv-plan{color:#8A7A63;margin-bottom:14px}
+.bv-fact{color:var(--ink);font-weight:700;font-size:9.5px;margin-bottom:2px}
+.grr-cols .kpis .kpi{min-height:112px}
+/* Запасы: содержимое диаграмм по центру, плашки ниже */
+.res-row .chart{display:flex;flex-direction:column;justify-content:center}
+.kpis-mini .kpi{padding:7px 11px}
+.kpis-mini .kpi .cap{font-size:11px}
+.kpis-mini .kpi .val{font-size:19px}
+.kpis-mini .kpi .sub{font-size:10.5px}
+/* Лицензии: карта без пустых полей сверху и снизу */
+.lic-apps .lic-map{align-self:end;aspect-ratio:1853/1226}
+/* Статус задач: без пустоты под справками */
+.status-top{align-items:stretch}
+.docs-box{justify-content:flex-start}
+/* v78.1: точное выравнивание */
+.grr-cols .kpis .kpi{min-height:120px}
+.grr-cols .week-row{align-items:stretch}
+.grr-cols .week-row > div > .chart{flex:1}
+.status-kpis{justify-content:space-between}
+.status-kpis .kpi{flex:none}
+.week-row-narrow h3{min-height:32px}
+.status-kpis .kpi{padding:8px 13px}
+.status-kpis .kpi .val{font-size:22px}
+.status-kpis .kpi .cap{font-size:12px}
+
+/* ==== v79: поля графиков и компактные заявки ==== */
+.week-row-narrow{grid-template-columns:minmax(0,1fr) 190px}
+.week-row-narrow > div:first-child .chart{padding:10px 6px 6px}
+.lic-apps table{font-size:12px}
+.lic-apps th,.lic-apps td{padding:4px 8px}
+
+/* ==== v80: карта лицензий крупнее, таблица ГРР читабельнее ==== */
+.lic-apps{grid-template-columns:minmax(0,1fr) minmax(320px,50%)}
+.lic-apps > div:first-child{justify-content:stretch}
+.lic-apps table{height:100%}
+/* Таблица план/факт внутри раскрывающегося блока: колонки по содержимому */
+.collapsible-body .pf-wide{table-layout:auto;width:100%;font-size:11.5px}
+.collapsible-body .pf-wide th,.collapsible-body .pf-wide td{padding:4px 9px;white-space:nowrap;overflow:visible}
+.collapsible-body .pf-wide td:first-child,.collapsible-body .pf-wide th:first-child{width:auto;white-space:nowrap}
+.lic-apps .lic-map{align-self:stretch}
+.lic-apps .lic-map img{object-fit:contain;object-position:center}
+
+.lic-apps th{white-space:nowrap}
+.lic-apps td:nth-child(2){white-space:normal}
+
+/* ==== v81: карта лицензий с лупой ==== */
+.map-zoom-wrap{display:flex;flex-direction:column;min-width:0}
+.lic-apps > .map-zoom-wrap{align-self:stretch}
+.map-zoom{position:relative;overflow:hidden;cursor:zoom-in;flex:1;min-height:0}
+.map-zoom.is-zoomed{cursor:grab}
+.map-zoom.is-zoomed:active{cursor:grabbing}
+.map-zoom img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  transition:transform .09s linear;will-change:transform;user-select:none}
+.map-zoom-bar{position:absolute;right:8px;bottom:8px;display:flex;align-items:center;gap:4px;z-index:3;
+  background:rgba(43,31,20,.82);border-radius:9px;padding:3px 5px;backdrop-filter:blur(2px)}
+.map-zoom-bar button{width:22px;height:22px;border:0;border-radius:6px;background:rgba(255,255,255,.14);
+  color:#F4EEE2;font-size:14px;line-height:1;cursor:pointer}
+.map-zoom-bar button:hover{background:rgba(255,255,255,.26)}
+.map-zoom-bar button.reset{width:auto;padding:0 7px;font-size:11px}
+.map-zoom-bar span{color:#F4EEE2;font-size:11.5px;font-variant-numeric:tabular-nums;min-width:30px;text-align:center}
+
+/* ==== v83: таблица Обзора – участки построчно, крупнее названия ==== */
+.ov-top .lic-all td.lic-name b{display:block;font-size:13.5px;margin-bottom:3px}
+.ov-top .lic-all .lic-site{display:block;font-size:12px;color:#6B4A34;line-height:1.35;white-space:nowrap}
+.ov-top .lic-all .lic-method{font-style:normal;font-size:10.5px;color:var(--teal);margin-left:5px;padding:0 5px;border-radius:6px;background:rgba(116,136,63,.12)}
+.ov-top .lic-all .lic-method.dim{color:var(--mut);background:none}
+.ov-top .lic-all td.c-au{white-space:normal;min-width:74px}
+.ov-top .lic-all .v-note{display:block;font-size:9.5px;color:var(--mut);line-height:1.15;white-space:normal}
+/* Карта Обзора, подогнанная скриптом: таблица по содержимому, карта ровно по пропорциям */
+.ov-top:has(> .map-fit){grid-template-columns:auto minmax(0,1fr);align-items:start}
+.ov-top > .map-frame.map-fit{aspect-ratio:auto;max-height:none;align-self:start}
+.ov-top:has(> .map-fit) .lic-all{height:auto}
+.ov-top:has(> .map-fit) > .lic-list{height:auto;width:100%}
+.ov-top:has(> .map-fit) .lic-all{width:100%}
+
+/* ==== v84: Лицензии – компактные плашки, портфель со статусами и карта ==== */
+.lic-kpis{grid-template-columns:repeat(3,minmax(0,1fr));max-width:1100px}
+.lic-port{font-size:12.5px}
+.lic-port th,.lic-port td{padding:6px 10px}
+.lic-port td:first-child{text-align:left}
+.lic-port .lic-sub{font-size:11.5px;color:#6B4A34;margin-top:1px}
+.lic-port .lic-exp{font-weight:700;font-variant-numeric:tabular-nums}
+.lic-st{display:inline-block;margin-top:3px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:9px;white-space:nowrap}
+.lic-st.st-ok{background:rgba(116,136,63,.16);color:#4D6B1F}
+.lic-st.st-warn{background:rgba(193,122,44,.18);color:#8A4E12}
+.lic-st.st-rev{background:rgba(120,95,60,.14);color:#6B4A34}
+.lic-portfolio{margin-top:14px}
+.ov-top .lic-all tr.lic-legend td{text-align:left;font-size:11px;color:var(--mut);padding:5px 10px;background:transparent}
+.ov-top .lic-all tr.lic-legend .lic-method{margin-left:0;margin-right:4px}
+.ov-top .lic-all tr.lic-legend td{white-space:normal;line-height:1.6}
+.ov-top .lic-all th,.ov-top .lic-all td{padding-top:2px;padding-bottom:2px}
+.ov-top .lic-all .lic-site{line-height:1.3}
+.ov-top .lic-all td:not(.c-au) .v-note,.ov-top .lic-all td:not(.c-au) .v-main{display:inline}
+.ov-top .lic-all td:not(.c-au) .v-note{margin-left:3px}
+.lic-port td:first-child,.lic-port .lic-sub{white-space:nowrap}
+.lic-portfolio{grid-template-columns:minmax(0,1fr) minmax(320px,50%)}
+.lic-portfolio > div:first-child{min-width:0}
+.lic-portfolio .lic-port{width:100%;height:100%}
+.lic-portfolio{grid-template-columns:auto minmax(300px,1fr)}
+.lic-port th,.lic-port td{padding:4px 9px}
+.lic-st{font-size:10.5px;padding:1px 7px;margin-top:2px}
+
+/* ==== v85: задачи по протоколу – номер пункта и подпункты ==== */
+.task-num{display:inline-block;min-width:26px;margin-right:6px;color:var(--copper);font-variant-numeric:tabular-nums}
+.task-sub{margin:4px 0 0 16px;padding:0}
+.task-sub li{font-size:12px;line-height:1.35;margin:1px 0}
+
+/* ==== v85: Статус задач – документы одной линией, плашки в ряд ==== */
+.docs-line{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.4)}
+.docs-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin-right:2px}
+.docs-div{width:1px;align-self:stretch;background:var(--line);margin:0 6px}
+.doc-d{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:8px;background:#fff;border:1px solid var(--line);
+  font-size:12px;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap}
+.doc-d:hover{border-color:var(--copper)}
+.doc-d.is-current{border-color:var(--teal);box-shadow:inset 3px 0 0 var(--teal)}
+.doc-d .ic-pdf{font-size:9px;padding:2px 4px}
+.status-top:has(.docs-line){grid-template-columns:minmax(0,1fr) auto;align-items:stretch}
+.status-kpis-row{flex-direction:row;gap:8px}
+.status-kpis-row .kpi{min-width:180px;justify-content:center}
+.task-extra{display:none}
+@media print{
+  .task-extra{display:block}
+  .done-zone{display:none !important}
+  .section-tabs{display:none}
+}
+.docs-line{flex-wrap:wrap;gap:6px 8px;padding:7px 10px;overflow:visible}
+.doc-d{padding:3px 8px;font-size:11.5px}
+.doc-d::before{content:"";width:9px;height:11px;border:1.5px solid var(--copper);border-radius:2px;display:inline-block;margin-right:1px}
+.docs-div{height:22px;align-self:center;width:1px;background:var(--line);margin:0 8px;flex:none}
+.status-kpis-row .kpi{padding:8px 13px;min-width:170px}
+.status-kpis-row .kpi .val{font-size:20px}
+.status-kpis-row .kpi .sub{font-size:11px;margin-top:0}
+
+/* ==== v85: линейные графики ==== */
+.line-chart svg{display:block;height:auto;overflow:visible}
+.line-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--mut);margin-top:4px}
+.line-legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+/* ==== v85: Запасы – плашки слева, линейные графики справа ==== */
+.res-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:stretch}
+.res-top > div:first-child{display:flex;flex-direction:column;justify-content:center}
+.res-h{font-size:14px;margin:2px 0 6px}
+.res-top .res-h + .kpis{margin-bottom:10px}
+.kpis-micro{gap:8px}
+.kpis-micro .kpi{padding:6px 9px;min-height:0}
+.kpis-micro .kpi .cap{font-size:10.5px}
+.kpis-micro .kpi .val{font-size:18px;line-height:1.15}
+.kpis-micro .kpi .val small{font-size:10.5px}
+.kpis-micro .kpi .sub{font-size:10px;line-height:1.25;margin-top:1px}
+.res-lines{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.res-lines .chart{padding:8px 10px 6px;display:flex;flex-direction:column;justify-content:center}
+.res-lines h3{font-size:12.5px;margin:0 0 2px;color:var(--navy)}
+.lic-years .lic-sub{font-size:11px;color:#6B4A34;font-weight:400}
+@media screen and (max-width:1200px){html:not(.pf-on) .res-top{grid-template-columns:1fr}}
+
+/* ==== v86: плашки план/факт ГРР крупнее ==== */
+.kpis-pf .kpi{padding:10px 12px;min-height:118px;display:flex;flex-direction:column;justify-content:center}
+.kpis-pf .kpi .cap{font-size:13px}
+.kpis-pf .kpi .val{font-size:24px;line-height:1.15;white-space:nowrap}
+.kpis-pf .kpi .val .pf-sep{font-weight:400;opacity:.55}
+.kpis-pf .kpi .val .pf-plan{font-size:18px;opacity:.75}
+.kpis-pf .kpi .val small{font-size:12px}
+.kpis-pf .kpi .sub{font-size:11.5px;line-height:1.3}
+.grr-cols .kpis-pf{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.core-pf{font-size:13px}
+.core-pf th,.core-pf td{padding:6px 10px}
+.core-pf td:first-child{text-align:left;white-space:nowrap}
+.core-pf .dim-num{color:var(--mut)}
+
+/* ==== v86: Техника и обеспечение участка – сетка 2×2, крупнее ==== */
+.eq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px;align-items:start;margin-top:14px}
+.eq-grid table{font-size:13px}
+.eq-grid th,.eq-grid td{padding:6px 9px}
+.eq-grid .rigs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.eq-grid h2{font-size:17px}
+@media screen and (max-width:1100px){html:not(.pf-on) .eq-grid{grid-template-columns:1fr}}
+.kpis-pf .kpi .val{font-size:22px}
+.kpis-pf .kpi .val .pf-plan{font-size:16px}
+.kpis-pf .kpi .val small{font-size:11px}
+.kpis-pf .kpi{min-height:104px}
+.eq-grid > div:nth-child(3),.eq-grid > div:nth-child(4){grid-column:1 / -1}
+.eq-grid > div:nth-child(2) td:first-child{white-space:nowrap}
+.eq-grid > div:nth-child(2) td:last-child{font-size:12px}
+
+/* ==== v86: ОПР – статусы по направлениям ==== */
+.opr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:13px}
+.opr-card{border-left-color:var(--copper);margin:0}
+.opr-head{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.opr-head .badge{margin-left:auto;white-space:nowrap}
+.opr-title{font-size:15px;font-weight:700;color:var(--ink);text-decoration:none}
+a.opr-title:hover{color:var(--copper)}
+.opr-counts{display:flex;gap:6px;margin-bottom:6px}
+.opr-counts span{font-size:11px;font-weight:600;padding:1px 7px;border-radius:8px}
+.st-done{background:rgba(116,136,63,.16);color:#4D6B1F}
+.st-work{background:rgba(193,122,44,.18);color:#8A4E12}
+.st-plan{background:rgba(120,95,60,.12);color:#6B4A34}
+.opr-list{list-style:none;margin:0;padding:0}
+.opr-list li{display:flex;align-items:baseline;gap:7px;padding:4px 0;border-top:1px dashed rgba(120,95,60,.18);font-size:13.5px}
+.opr-list li:first-child{border-top:0}
+.opr-dot{flex:none;width:8px;height:8px;border-radius:50%;transform:translateY(-1px)}
+.opr-done .opr-dot{background:#74883F}
+.opr-work .opr-dot{background:#C17A2C}
+.opr-plan .opr-dot{background:#BDB2A0}
+.opr-done .opr-t{color:var(--mut)}
+.opr-t{flex:1}
+.opr-t a{color:inherit;text-decoration:underline;text-decoration-color:rgba(193,122,44,.5)}
+.opr-due{flex:none;font-size:12px;color:var(--mut);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* ==== v86: Персонал и бюджет – справка и финансирование в одну строку ==== */
+.fin-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:14px;align-items:stretch;margin-bottom:6px}
+.fin-row > div{display:flex;flex-direction:column}
+.fin-row .notebox{flex:1}
+.fin-row .notebox li{font-size:13.5px}
+.fin-h{font-size:13px;margin:0 0 6px;color:var(--mut);text-transform:uppercase;letter-spacing:.03em}
+.fin-kpis{grid-template-columns:repeat(3,minmax(0,1fr));flex:1}
+.fin-kpis .kpi{display:flex;flex-direction:column;justify-content:center}
+@media screen and (max-width:1100px){html:not(.pf-on) .fin-row{grid-template-columns:1fr}}
+.row-link{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:rgba(193,122,44,.5)}
+.row-link:hover{color:var(--copper)}
+
+/* ==== v86: «Источники» внизу меню ==== */
+.sb-src{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:8px 10px;border-radius:10px;color:inherit;text-decoration:none;font-size:14px;opacity:.9}
+.sb-src:hover,.sb-src.active{background:rgba(255,255,255,.08);opacity:1}
+
+/* ==== v86: крупнее текст по всему дашборду ==== */
+body{font-size:15.5px}
+.lede{font-size:15px}
+.plain{font-size:14px}
+h2{font-size:18px}
+.sec-h{font-size:15px}
+.kpi .cap{font-size:14px}
+.kpi .sub{font-size:13px}
+.chip,.badge{font-size:12.5px}
+.sb-nav a{font-size:15px}
+th,td{font-size:14px}
+.pf-narrow,.pf-wide,.prog-table,.lic-years,.budget-table{font-size:12.5px}
+.pf-narrow th,.pf-narrow td,.pf-wide th,.pf-wide td,.prog-table th,.prog-table td,.lic-years th,.lic-years td,.budget-table th,.budget-table td{font-size:12.5px}
+.core-pf th,.core-pf td{font-size:14px}
+.eq-grid th,.eq-grid td{font-size:13.5px}
+.lic-port th,.lic-port td{font-size:13.5px}
+.task-body{font-size:13.5px}
+.task-head b{font-size:14.5px}
+.opr-list li{font-size:14px}
+.kpis-mini .kpi .cap{font-size:12px}
+.kpis-mini .kpi .sub{font-size:11.5px}
+.kpis-micro .kpi .cap{font-size:11.5px}
+.kpis-micro .kpi .val{font-size:19px}
+.kpis-micro .kpi .sub{font-size:11px}
+.ov-top .lic-all th,.ov-top .lic-all td{font-size:12.5px}
+.ov-top .lic-all th,.ov-top .lic-all td{font-size:12px}
+
+/* ==== v87: ОПР – блок ЕМС с этапами договора ==== */
+.opr-ems{margin-bottom:13px}
+.ems-facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;color:var(--mut);margin:4px 0 10px}
+.ems-facts b{color:var(--ink)}
+.ems-facts a{color:inherit;text-decoration:underline;text-decoration-color:rgba(193,122,44,.5)}
+.ems-table{font-size:13.5px}
+.ems-table th,.ems-table td{padding:5px 9px}
+.ems-table td:first-child{display:flex;align-items:baseline;gap:7px}
+.ems-table .st-done,.ems-table .st-part,.ems-table .st-work,.ems-table .st-plan{font-size:11.5px;font-weight:600;padding:1px 7px;border-radius:8px;white-space:nowrap}
+.st-part{background:rgba(116,136,63,.10);color:#5E7A2A;border:1px dashed rgba(116,136,63,.5)}
+.opr-part .opr-dot{background:linear-gradient(90deg,#74883F 50%,#C17A2C 50%)}
+.ems-note{font-size:11.5px;color:var(--mut);margin-top:2px}
+
+/* ==== v87: Персонал и бюджет – финансирование и оплата ==== */
+.h2-inline span{font-size:13px;font-weight:600;color:var(--mut);margin-left:8px}
+.fin-kpis5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.budget-v2{table-layout:auto}
+.budget-v2 td:nth-child(2){white-space:nowrap}
+.budget-sub2 td:nth-child(2){padding-left:30px;font-size:12px;color:var(--mut)}
+.budget-sub2 td{font-size:12px}
+@media screen and (max-width:1200px){html:not(.pf-on) .fin-kpis5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* v87: вместо квадратика – стрелка скачивания */
+.doc-d::before{content:"⤓";width:auto;height:auto;border:0;border-radius:0;font-size:13px;line-height:1;color:var(--copper);margin-right:2px}
+.h3-sub{display:block;font-size:11px;font-weight:600;color:var(--mut);margin-top:1px}
+.ems-table td:first-child{display:table-cell}
+.ems-table .opr-dot{display:inline-block;margin-right:6px;vertical-align:middle}
+.ems-table td{vertical-align:middle}
+.ems-note{display:inline;margin-left:6px}
+.budget-v2{table-layout:fixed;width:100%;font-size:13px}
+.budget-v2 th,.budget-v2 td{padding:5px 9px;font-size:13px}
+.budget-v2 td:nth-child(2){white-space:normal}
+.budget-v2 .budget-sub2 td{font-size:12.5px}
+.ems-table th{white-space:nowrap}
+
+/* ==== v88: «Источники» – обычный пункт меню у нижнего края; логотип во весь круг ==== */
+.sb-nav-bottom{flex:none;margin-top:auto;padding-top:6px;padding-bottom:6px}
+.sb-logo{background:none;border:1px solid rgba(255,255,255,0.18)}
+/* v88: плашки ГРР масштабируются по ширине экрана, текст не вылезает */
+.kpis-pf .kpi{padding:9px 9px;min-width:0;overflow:hidden}
+.kpis-pf .kpi .cap{font-size:clamp(11px,0.72vw + 1px,14px);overflow-wrap:anywhere;line-height:1.2}
+.kpis-pf .kpi .val{font-size:clamp(15px,1.15vw + 1px,22px);white-space:normal;line-height:1.15}
+.kpis-pf .kpi .val .pf-plan{font-size:0.74em}
+.kpis-pf .kpi .val small{font-size:0.52em}
+.kpis-pf .kpi .sub{font-size:clamp(10px,0.62vw + 2px,12px);overflow-wrap:anywhere}
+.kpis-pf .kpi .cap{overflow-wrap:normal;hyphens:auto;-webkit-hyphens:auto}
+.kpis-pf .kpi .cap{overflow-wrap:anywhere}
+
+/* ==== v89: Техника – станки и структура в одну строку, таблицы на всю ширину и плотнее ==== */
+.eq-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.05fr);gap:14px;align-items:stretch}
+.eq-top .rig{margin:0}
+.eq-top .rig .note{font-size:12.5px}
+.eq-struct{display:flex;align-items:center;justify-content:center;padding:10px 12px;margin:0}
+.eq-struct .donut-legend{font-size:12.5px}
+.eq-grid{grid-template-columns:1fr;gap:14px;margin-top:16px}
+.eq-grid > div:nth-child(1) td:first-child{white-space:nowrap}
+.eq-grid th,.eq-grid td{padding:4px 10px;line-height:1.3}
+.eq-grid td{white-space:nowrap}
+.eq-grid td:last-child{white-space:normal}
+.eq-grid > div:nth-child(1) td:last-child{font-size:13px}
+@media screen and (max-width:1100px){html:not(.pf-on) .eq-top{grid-template-columns:1fr}}
+.eq-grid th{white-space:nowrap}
+
+/* ==== v91: раскрываемая строка заявок на лицензии ==== */
+.apps-head{cursor:pointer}
+.apps-head:hover td{background:rgba(193,122,44,.06)}
+.apps-toggle{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:0;cursor:pointer;font:inherit;color:inherit}
+.apps-body{display:none}
+.apps-body.is-open{display:table-row}
+.apps-body > td{padding:6px 10px 10px;background:rgba(255,255,255,.35)}
+.apps-table{font-size:12.5px;margin:0;border-radius:8px}
+.apps-table th,.apps-table td{padding:4px 8px;text-align:left;white-space:nowrap}
+.apps-table td.apps-note{white-space:normal;min-width:220px}
+.apps-foot{font-size:11.5px;color:var(--mut);margin-top:5px;white-space:normal;text-align:left}
+@media print{
+  .apps-body{display:none !important}
+  .apps-head .collapsible-chev{display:none}
+  .lic-apps-print{display:block !important;margin-top:14px}
+  .lic-apps-print table{font-size:12px}
+  .lic-apps-print th,.lic-apps-print td{padding:4px 8px}
+  .lic-portfolio > .map-zoom-wrap{align-self:stretch !important;position:static !important;height:auto !important}
+}
+/* при раскрытых заявках карта не растягивается, а остаётся рядом с верхом таблицы */
+.lic-portfolio:has(.apps-body.is-open) > .map-zoom-wrap{align-self:start;position:sticky;top:76px;height:420px}
+.apps-table td:nth-child(2){white-space:normal;min-width:130px}
+.lic-portfolio:has(.apps-body.is-open) > .map-zoom-wrap{height:auto}
+.lic-portfolio:has(.apps-body.is-open) > .map-zoom-wrap .map-zoom{flex:none;aspect-ratio:1853/1226}
+
+/* ==== v93: печать всех вкладок – длинные таблицы переносятся по строкам, без пустых хвостов ==== */
+@media print{
+  html.pf-on table{break-inside:auto}
+  html.pf-on tr{break-inside:avoid}
+  html.pf-on .ov-top table,html.pf-on .lic-portfolio table,html.pf-on .kpi,html.pf-on .chart,html.pf-on .rig{break-inside:avoid}
+  html.pf-on h2,html.pf-on h3{break-after:avoid}
+}
+tbody.pv-extra{display:none}
+@media print{tbody.pv-extra{display:table-row-group !important}}
+.ov-top .lic-all .th-sub{display:block;font-size:9.5px;font-weight:500;color:var(--mut)}
+
+/* ==== v96: печать Обзора – карта по пропорциям, таблица тянется до её высоты, без наложения ==== */
+@media print{
+  html.pf-on .ov-top{grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;align-items:stretch !important}
+  html.pf-on .ov-top > .map-frame,html.pf-on .ov-top > .map-frame.map-fit{width:100% !important;height:auto !important;aspect-ratio:1040/814 !important;align-self:start !important}
+  html.pf-on .ov-top > .lic-list{height:100% !important;min-width:0}
+  html.pf-on .ov-top .lic-all{width:100% !important;height:100% !important}
+}
+
+/* ==== v97: Обзор – год по центру, итог по портфелю ==== */
+.ov-top .lic-all td.yr,.ov-top .lic-all th.c-yr{text-align:center !important}
+.ov-top .lic-all tr.lic-total td{font-weight:700;background:rgba(116,136,63,.10);padding-top:1px;padding-bottom:1px}
+.ov-top .lic-all tr.lic-total td.lic-name b{font-size:13px}
+/* если пропорции рамки почти совпадают с картой – заполняем без полей (обрезка по краям не больше 4%) */
+.ov-top .lic-all tr.lic-legend td{white-space:nowrap}
+
+/* ==== v98: титульный лист печати ==== */
+.print-cover{display:none}
+@media print{
+  .print-cover{display:flex !important;flex-direction:column;align-items:center;justify-content:center;
+    height:900px;text-align:center;break-after:page;page-break-after:always}
+  .print-cover .pc-logo{width:132px;height:132px;border-radius:50%;margin-bottom:18px}
+  .print-cover .pc-brand{font-size:26px;font-weight:700;color:var(--ink)}
+  .print-cover .pc-org{font-size:14px;color:var(--mut);margin-bottom:26px}
+  .print-cover .pc-project{font-size:17px;color:var(--navy);margin-bottom:6px}
+  .print-cover .pc-section{font-size:34px;font-weight:700;color:var(--accent,#5A1F20);margin-bottom:22px}
+  .print-cover .pc-dates{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)}
+}
+/* дата актуальности данных раздела */
+.as-of{font-size:12.5px;color:var(--mut);margin:-4px 0 10px}
+
+/* ==== v99: печать всего дашборда и колонтитул с названием раздела ==== */
+.print-all .print-section{break-before:page;page-break-before:always}
+.print-all .print-section:first-child{break-before:auto;page-break-before:auto}
+.print-all .print-section .topbar,.print-all .print-section .print-cover{display:none !important}
+.print-run-head{display:none}
+.btn-ghost{display:inline-flex;align-items:center;padding:6px 12px;border:1px solid var(--line);border-radius:10px;
+  background:rgba(255,255,255,.6);color:var(--ink);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap}
+.btn-ghost:hover{border-color:var(--copper);color:var(--copper)}
+@media print{
+  .print-all .print-section{padding-top:2mm}
+  .print-run-head{display:none}
+}
+
+/* ==== v101: колонтитул «Раздел N/M» и аккуратные переносы ==== */
+.pf-page-mark{display:none}
+@media print{
+  html.pf-on .pf-page-mark{display:block;position:absolute;right:0;margin-top:2px;
+    font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.02em;z-index:4}
+  html.pf-on .collapsible,html.pf-on .notebox,html.pf-on .opr-card,html.pf-on .rig,
+  html.pf-on .kpis,html.pf-on .miles,html.pf-on .eq-top,html.pf-on .week-row{break-inside:avoid}
+  html.pf-on h2,html.pf-on h3,html.pf-on .sec-h{break-after:avoid;break-inside:avoid}
+  html.pf-on p,html.pf-on li{orphans:3;widows:3}
+}
+@media print{
+  html.pf-on .topbar{display:none !important}
+  html.pf-on .tab-print-title{break-after:avoid;break-inside:avoid}
+}
+@media print{ html.pf-on .content > .as-of{padding-right:120px} }
+/* v102: подписи листов в потоке печати */
+.pf-first,.pf-break{display:none}
+@media print{
+  html.pf-on .pf-first{display:block}
+  html.pf-on .pf-break{display:block;break-before:page;page-break-before:always}
+  html.pf-on .pf-mark-line{text-align:right;font-size:11px;font-weight:700;color:var(--mut);margin:0 0 4px}
+  html.pf-on .pf-page-mark{display:none !important}
+}
+
+/* ==== v102: режим измерения печатной раскладки (то же, что даёт @media print) ==== */
+html.pf-sim .no-print, html.pf-sim .sidebar, html.pf-sim .print-btn, html.pf-sim .section-tabs,
+html.pf-sim .collapsible-action, html.pf-sim .collapsible-chev, html.pf-sim .rates-ticker,
+html.pf-sim .topbar, html.pf-sim .done-zone, html.pf-sim .apps-body, html.pf-sim .preview-more,
+html.pf-sim .collapsible-preview, html.pf-sim .kpi-expand-btn, html.pf-sim .pf-page-mark{display:none !important}
+html.pf-sim .print-only{display:block !important}
+html.pf-sim .tab-panel{display:block !important}
+html.pf-sim .tab-print-title{display:block !important;font-size:15px;font-weight:800;border-top:1px solid #999;margin:18px 0 8px;padding-top:8px}
+html.pf-sim .collapsible-body{display:block !important}
+html.pf-sim .kpi-expand-body{display:block !important}
+html.pf-sim .task-extra{display:block !important}
+html.pf-sim tbody.pv-extra{display:table-row-group !important}
+html.pf-sim .content{max-width:none !important;width:auto !important;margin:0 !important;padding:0 !important}
+html.pf-sim h1{font-size:19px}
+html.pf-sim h2{font-size:14.5px;margin:14px 0 6px}
+html.pf-sim table{font-size:11px}
+html.pf-sim td, html.pf-sim th{padding:5px 7px}
+html.pf-sim .pf-first, html.pf-sim .pf-break{display:block}
+html.pf-sim .pf-mark-line{text-align:right;font-size:11px;font-weight:700;margin:0 0 4px}
+
+html.pf-sim .print-cover{display:flex !important;flex-direction:column;align-items:center;justify-content:center;height:900px;text-align:center}
+/* v103: линейные графики Запасов вровень с плашками слева */
+.res-lines .chart{height:100%;padding:8px 10px 4px}
+.res-lines .line-chart{flex:1;display:flex;flex-direction:column;min-height:0}
+.res-lines .line-chart svg{flex:1;min-height:0;height:auto}
+.res-lines h3{margin-bottom:0}
+.pf-abs-mark{display:none}
+@media print{
+  html.pf-on .pf-abs-mark{display:block;position:absolute;right:0;font-size:11px;font-weight:700;color:var(--mut);z-index:4}
+}
+html.pf-sim .pf-abs-mark{display:none}
+/* v104: ОПР при печати в четыре колонки */
+@media print{ html.pf-on .opr-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important} }
+/* v105: печать без дорогих эффектов – иначе Chrome долго перерисовывает страницу */
+@media print{
+  *, *::before, *::after{
+    backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+    box-shadow:none !important; filter:none !important; text-shadow:none !important;
+  }
+  html.pf-on .main{will-change:auto}
+}
+/* v106: последняя строка таблицы не уезжает одна на новый лист */
+@media print{ html.pf-on tr:last-child{break-before:avoid} }
+/* v107: «Техника» – обычный вертикальный стек, чтобы печать резала его по блокам */
+.eq-grid{display:block}
+.eq-grid > div{margin-bottom:16px}
+.eq-grid > div:last-child{margin-bottom:0}
+@media print{ html.pf-on .keep-block{break-inside:avoid} }
+
+/* ==== v109: одна кнопка печати с выбором ==== */
+.print-menu{position:relative}
+.print-menu-list{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:11px;box-shadow:0 10px 28px rgba(20,12,4,.18);padding:5px;z-index:20;min-width:190px;max-width:280px}
+.print-menu-list button{display:block;width:100%;text-align:left;padding:8px 11px;border:0;background:none;
+  font:inherit;font-size:13.5px;color:var(--ink);border-radius:8px;cursor:pointer}
+.print-menu-list button:hover:not(:disabled){background:rgba(193,122,44,.12);color:var(--copper)}
+.print-menu-list button:disabled{color:var(--mut);cursor:default}
+.print-hint-note{max-width:760px;margin:-2px 0 14px;padding:10px 14px;border-radius:10px;
+  background:rgba(193,122,44,.10);border:1px solid rgba(193,122,44,.28);font-size:13px;line-height:1.45}
+
+/* ==== v109: одна кнопка печати с выбором ==== */
+.print-menu{position:relative}
+.print-menu-pop{position:absolute;right:0;top:calc(100% + 6px);z-index:20;display:flex;flex-direction:column;min-width:170px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 26px rgba(20,12,4,.18);overflow:hidden}
+.print-menu-pop button{padding:9px 14px;border:0;background:none;text-align:left;font:inherit;font-size:13.5px;color:var(--ink);cursor:pointer}
+.print-menu-pop button:hover{background:rgba(193,122,44,.12);color:var(--copper)}
+/* v109: таблица вех и подпись диаграммы парка */
+.miles-table{font-size:13.5px}
+.miles-table td.d{white-space:nowrap;font-weight:700;font-variant-numeric:tabular-nums;color:var(--navy)}
+.miles-table td.blk{color:var(--mut);font-size:12.5px}
+.miles-table td.code{color:var(--copper);font-size:12px;font-weight:700;white-space:nowrap}
+.miles-table tr.is-key td{background:rgba(116,136,63,.12)}
+.eq-struct{flex-direction:column;gap:6px}
+.eq-struct-h{font-size:13px;margin:0;color:var(--navy);text-align:center}
+
+/* ==== v109: цифры крупнее по всему дашборду ==== */
+.kpi .val{font-size:29px}
+.kpis-sm .kpi .val{font-size:25px}
+.kpis-mini .kpi .val{font-size:21px}
+.kpis-micro .kpi .val{font-size:21px}
+.kpis-pf .kpi .val{font-size:clamp(16px,1.25vw + 1px,24px)}
+td.num,td .num,.num b,td b{font-variant-numeric:tabular-nums}
+th,td{font-size:14.5px}
+.pf-narrow,.pf-wide,.prog-table,.lic-years,.budget-table,.core-pf{font-size:13px}
+.pf-narrow th,.pf-narrow td,.pf-wide th,.pf-wide td,.prog-table th,.prog-table td,
+.lic-years th,.lic-years td,.budget-table th,.budget-table td,.core-pf th,.core-pf td{font-size:13px}
+.ov-top .lic-all th,.ov-top .lic-all td{font-size:12.5px}
+.lic-port th,.lic-port td{font-size:14px}
+.eq-grid th,.eq-grid td{font-size:14px}
+.task-body{font-size:14px}
+.opr-list li{font-size:14.5px}
+.plain{font-size:14.5px}
+.lede{font-size:15.5px}
+/* v112: при раскрытых заявках карта сохраняет размер, таблица не расталкивает колонку */
+.lic-portfolio:has(.apps-body.is-open){grid-template-columns:minmax(0,1fr) minmax(320px,46%)}
+.lic-portfolio:has(.apps-body.is-open) > div:first-child{min-width:0}
+.apps-table{width:100%;table-layout:fixed}
+.apps-table td,.apps-table th{white-space:normal;word-break:break-word}
+.apps-table td:first-child,.apps-table th:first-child{width:34px}
+.lic-portfolio:has(.apps-body.is-open) .lic-port{width:100%;table-layout:fixed}
+.lic-portfolio:has(.apps-body.is-open) .lic-port td,
+.lic-portfolio:has(.apps-body.is-open) .lic-port th{white-space:normal}
+.lic-portfolio:has(.apps-body.is-open) .lic-port td:first-child,
+.lic-portfolio:has(.apps-body.is-open) .lic-port th:first-child{width:38%}
+/* v112: заявки раскрываются отдельным блоком на всю ширину */
+.apps-panel{margin-top:14px}
+.apps-panel .apps-table{width:100%;table-layout:auto}
+.apps-panel .apps-table td,.apps-panel .apps-table th{white-space:normal;word-break:normal}
+.lic-portfolio:has(.apps-head.is-open){grid-template-columns:auto minmax(300px,1fr)}
+.lic-portfolio:has(.apps-head.is-open) .lic-port{width:auto;table-layout:auto}
+.apps-panel .apps-table td:nth-child(4){white-space:nowrap}
+
+/* ==== v112: печатный колонтитул – подпись слева, знак УК справа ==== */
+@media print{
+  html.pf-on .pf-mark-line{text-align:left;font-size:14px;font-weight:700;color:#6B4A34;margin:0 0 6px}
+  html.pf-on .print-stamp{display:flex !important;position:fixed;top:0;right:0;z-index:9;
+    flex-direction:column;align-items:center;gap:2px}
+  html.pf-on .print-stamp img{width:46px;height:46px;border-radius:50%}
+  html.pf-on .print-stamp span{font-size:10px;font-weight:700;letter-spacing:.06em;color:#6B4A34;font-family:Georgia,"Times New Roman",serif}
+  html.pf-on .content{padding-top:2mm}
+}
+.print-stamp{display:none}
+/* v112: крупная кнопка печати на странице общего документа */
+.btn-print-big{display:inline-flex;align-items:center;gap:12px;padding:12px 20px;border:0;border-radius:14px;cursor:pointer;
+  background:linear-gradient(135deg,#5A1F20,#7C3A2B);color:#F6EFE4;box-shadow:0 6px 18px rgba(90,31,32,.28);
+  font-size:15px;font-family:inherit}
+.btn-print-big:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-print-big .bp-ico{font-size:22px;line-height:1}
+.btn-print-big b{display:block;font-size:15px}
+.btn-print-big i{display:block;font-style:normal;font-size:12px;opacity:.85;margin-top:2px}
+
+/* ==== v113: знак УК и номер листа на каждой печатной странице ==== */
+.pf-stamp,.pf-foot{display:none}
+@media print{
+  html.pf-on .pf-stamp{display:flex;position:absolute;right:0;flex-direction:column;align-items:center;gap:1px;z-index:9}
+  html.pf-on .pf-stamp img{width:42px;height:42px;border-radius:50%}
+  html.pf-on .pf-stamp span{font-size:9.5px;font-weight:700;letter-spacing:.06em;color:#6B4A34;font-family:Georgia,"Times New Roman",serif}
+  html.pf-on .pf-foot{display:block;position:absolute;right:0;font-size:12px;font-weight:700;color:#6B4A34;z-index:9}
+  html.pf-on .print-stamp{display:none !important}
+}
+
+/* v114: шапка печатного листа – подпись слева, знак УК справа */
+@media print{
+  html.pf-on .pf-first,html.pf-on .pf-break{display:block}
+  html.pf-on .pf-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;min-height:44px}
+  html.pf-on .pf-head .pf-mark-line{margin:0;text-align:left;font-size:14px;font-weight:700;color:#6B4A34}
+  html.pf-on .pf-head .pf-stamp{display:flex;position:static;flex-direction:column;align-items:center;gap:1px}
+}
+/* v115: номер листа в шапке, рядом со знаком */
+@media print{
+  html.pf-on .pf-head{align-items:flex-start}
+  html.pf-on .pf-num{margin-left:auto;margin-right:10px;font-size:13px;font-weight:700;color:#6B4A34;white-space:nowrap}
+  html.pf-on .pf-foot{display:none !important}
+}
+/* v115: номер листа отмеряется от начала своего листа */
+@media print{
+  html.pf-on .pf-head{position:relative}
+  html.pf-on .pf-head .pf-foot{display:block;position:absolute;right:0;top:calc(var(--pf-page, 900px) - 34px);
+    font-size:12px;font-weight:700;color:#6B4A34}
+}
+/* v115: сквозной номер листа – в правом нижнем углу своего листа */
+.pf-num{display:none}
+@media print{
+  html.pf-on .pf-head{position:relative}
+  html.pf-on .pf-head .pf-num{display:block;position:absolute;right:0;font-size:12.5px;font-weight:700;color:#6B4A34;z-index:9}
+}
+@media print{ html.pf-on .pf-num-abs{display:block;position:absolute;right:0} }
+@media print{
+  html.pf-on .pf-stamp .pf-num{display:block;font-style:normal;font-size:11px;font-weight:700;color:#6B4A34;margin-top:1px}
+  html.pf-on .pf-num-abs{display:none !important}
+}
+/* v116: номер листа в правом нижнем углу своего листа */
+@media print{
+  html.pf-on .pf-head{position:relative}
+  html.pf-on .pf-head .pf-num{display:block;position:absolute;right:0;font-size:12.5px;font-weight:700;color:#6B4A34;z-index:9}
+  html.pf-on .pf-stamp .pf-num{position:static}
+}
+@media print{ html.pf-on .pf-num-inner{display:block;position:absolute;right:0;font-size:12.5px;font-weight:700;color:#6B4A34;z-index:9} }
+@media print{ html.pf-on .content{overflow:visible !important} }
+@media print{
+  html.pf-on .pf-head .pf-num{background:#fff;padding:1px 5px;border-radius:6px}
+}
+
+/* ==================== v121 ==================== */
+
+/* --- Свёрнутые блоки остаются в DOM: на экране спрятаны, при печати раскрыты --- */
+.collapsible-body.is-off,.collapsible-preview.is-off,.kpi-expand-body.is-off,
+.gantt-sub-wrap.is-off,.apps-panel.is-off{display:none}
+@media print{
+  html.pf-on .collapsible-body.is-off,html.pf-on .kpi-expand-body.is-off,
+  html.pf-on .gantt-sub-wrap.is-off,html.pf-on .apps-panel.is-off{display:block !important}
+  html.pf-on .collapsible-preview.is-off{display:none !important}
+}
+html.pf-sim .collapsible-body.is-off,html.pf-sim .kpi-expand-body.is-off,
+html.pf-sim .gantt-sub-wrap.is-off,html.pf-sim .apps-panel.is-off{display:block !important}
+html.pf-sim .collapsible-preview.is-off{display:none !important}
+html.pf-sim .apps-body{display:block !important}
+
+/* --- Ширина печатной раскладки подбирается скриптом --- */
+@media print{ html.pf-on .main{width:var(--pf-w,1400px) !important} }
+html.pf-sim .main{width:var(--pf-w,1400px) !important}
+
+/* --- Шапка печатного листа: название раздела слева, знак УК и номер справа, снизу черта --- */
+@media print{
+  html.pf-on .pf-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+    min-height:58px;border-bottom:1.3px solid #8A6A4E;padding-bottom:7px;margin-bottom:14px}
+  html.pf-on .pf-head .pf-mark-line{margin:0;text-align:left;font-size:19px;font-weight:700;
+    color:#5A1F20;letter-spacing:.01em;align-self:center}
+  html.pf-on .pf-head .pf-stamp{display:flex;position:static;flex-direction:column;align-items:center;gap:2px;margin-left:auto}
+  html.pf-on .pf-head .pf-stamp img{width:70px;height:70px;border-radius:50%}
+  html.pf-on .pf-head .pf-stamp span{font-size:11px;font-weight:700;letter-spacing:.06em;color:#6B4A34}
+  html.pf-on .pf-head .pf-num{margin:0;font-size:13px;font-weight:700;color:#6B4A34;background:none;padding:0}
+  /* название раздела уже стоит в шапке – под ней не дублируем */
+  html.pf-on .content > h1{display:none !important}
+  html.pf-on .content > .as-of{padding-right:0;margin-top:0}
+}
+html.pf-sim .content > h1{display:none !important}
+
+/* --- Шрифты при печати крупнее --- */
+@media print{
+  html.pf-on h2{font-size:17px;margin:15px 0 7px}
+  html.pf-on h3,html.pf-on .sec-h{font-size:15px}
+  html.pf-on .as-of{font-size:13px}
+  html.pf-on .lede{font-size:16px}
+  html.pf-on .plain,html.pf-on .notebox li,html.pf-on .opr-list li{font-size:14px}
+  html.pf-on table{font-size:12.5px}
+  html.pf-on td,html.pf-on th{padding:5.5px 8px;font-size:12.5px}
+  html.pf-on .kpi .cap{font-size:12.5px}
+  html.pf-on .kpi .sub{font-size:11.5px}
+}
+html.pf-sim h2{font-size:17px;margin:15px 0 7px}
+html.pf-sim table{font-size:12.5px}
+html.pf-sim td,html.pf-sim th{padding:5.5px 8px;font-size:12.5px}
+
+/* --- ГРР: подпись над бубликом парка техники по левому краю, как у соседних плашек --- */
+.eq-struct-h{text-align:left}
+.eq-struct{align-items:stretch}
+
+/* --- Титульный лист печати: раскладка титульного слайда презентации --- */
+.print-cover{display:none}
+@media print{
+  .print-cover{display:block !important;position:relative;width:100%;height:194mm;overflow:hidden;
+    background:#221913 url("/cover-bg.jpg") center/cover no-repeat;
+    break-after:page;page-break-after:always;
+    -webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+  .print-cover .pc-photo{position:absolute;top:0;right:0;width:33%;height:100%;object-fit:cover;object-position:center}
+  .print-cover .pc-logo{position:absolute;top:9mm;right:calc(33% + 11mm);width:27mm;height:27mm}
+  .print-cover .pc-text{position:absolute;left:16mm;top:50%;transform:translateY(-50%);width:calc(67% - 30mm)}
+  .print-cover .pc-kicker{font-size:11pt;letter-spacing:.06em;color:#C9B38C;margin-bottom:7mm}
+  .print-cover .pc-title{font-family:Georgia,"Times New Roman",serif;font-weight:700;line-height:1.1}
+  .print-cover .pc-title span{display:block}
+  .print-cover .pc-t1{font-size:31pt;color:#fff}
+  .print-cover .pc-t2{font-size:31pt;color:#BF8A42}
+  .print-cover .pc-band{display:inline-block;margin-top:6mm;padding:3.4mm 7mm;border-radius:999px;
+    background:#B89A60;color:#20180F;font-family:Georgia,"Times New Roman",serif;font-size:12.5pt}
+  .print-cover .pc-printed{margin-top:5mm;font-size:10.5pt;color:#B7A288}
+}
+
+/* v121: номер листа стоит в шапке рядом со знаком, а не у нижнего края */
+@media print{
+  html.pf-on .pf-head{align-items:center}
+  html.pf-on .pf-head .pf-num{display:block;position:static;margin-left:auto;margin-right:12px;
+    font-size:13px;font-weight:700;color:#6B4A34;background:none;padding:0;white-space:nowrap}
+  html.pf-on .pf-head .pf-stamp{margin-left:0}
+  html.pf-on .pf-num-inner{top:auto}
+}
+
+/* v121: свёрнутые блоки печатаются целиком, поэтому запрет разрыва с них снимаем –
+   иначе Chrome выталкивает блок на новый лист и оставляет предыдущий полупустым */
+@media print{
+  html.pf-on .collapsible{break-inside:auto !important}
+  html.pf-on .collapsible-head{break-after:avoid}
+  html.pf-on [data-pf-tall],html.pf-on [data-pf-tall] *{break-inside:auto !important}
+}
+.gantt-sub-wrap.is-off.gantt-sub-screen{display:none}
+@media print{ html.pf-on .gantt-sub-wrap.is-off.gantt-sub-screen{display:none !important} }
+html.pf-sim .gantt-sub-wrap.is-off.gantt-sub-screen{display:none !important}
+
+/* v121: при печати карта Обзора вровень с нижним краем таблицы лицензий.
+   Рамка тянется на высоту строки, карта вписывается без искажения,
+   фон рамки совпадает с бумагой карты, поэтому поля по бокам не видны */
+@media print{
+  html.pf-on .ov-top > .map-frame,
+  html.pf-on .ov-top > .map-frame.map-fit{
+    align-self:stretch !important;position:relative;width:100% !important;height:auto !important;
+    aspect-ratio:auto !important;background:#DBD2C3;
+    -webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+  html.pf-on .ov-top > .map-frame img{position:absolute;inset:0;width:100%;height:100%;
+    object-fit:contain;object-position:center}
+}
+
+/* v122: номер листа строго в правом нижнем углу своего листа, на всех разделах */
+@media print{
+  html.pf-on .pf-head{position:relative}
+  html.pf-on .pf-head .pf-num{display:block;position:absolute;right:0;margin:0;padding:0;background:none;
+    font-size:13px;font-weight:700;color:#6B4A34;white-space:nowrap;z-index:9}
+  html.pf-on .pf-head .pf-stamp{margin-left:auto}
+  html.pf-on .pf-num-inner{display:block;position:absolute;right:0;font-size:13px;font-weight:700;color:#6B4A34;z-index:9}
+}
+/* v122: даты в плашке титульного листа не разрываются посреди даты */
+@media print{
+  .print-cover .pc-band{line-height:1.4}
+  .print-cover .pc-nb{white-space:nowrap}
+}
+.pf-spacer{display:none}
+@media print{ html.pf-on .pf-spacer{display:block;visibility:hidden} }
+
+/* v122: номер листа лежит в самом разделе, а не в шапке – иначе его обрезает overflow блока */
+.pf-num-page{display:none}
+@media print{
+  html.pf-on .pf-num-page{display:block;position:absolute;right:0;font-size:13px;font-weight:700;
+    color:#6B4A34;white-space:nowrap;z-index:9}
+}
+@media print{ .print-cover .pc-band{text-align:center} }
+
+/* ==================== v123 ==================== */
+/* ГРР, плашки план/факт: цифры по центру плашки, плановое число того же кегля, что и фактическое */
+.kpis-pf .kpi .val{text-align:center}
+.kpis-pf .kpi .val .pf-plan{font-size:1em}
+@media print{
+  html.pf-on .kpis-pf .kpi .val{text-align:center}
+  html.pf-on .kpis-pf .kpi .val .pf-plan{font-size:1em}
+}
+
+/* v125: при печати у сворачиваемого блока нет рамки и заливки – иначе невидимая распорка,
+   которой лист добивается до строки с номером, растягивает пустую рамку до низа листа */
+@media print{
+  html.pf-on .collapsible{border:none !important;background:none !important;padding:0 !important}
+  html.pf-on .collapsible-head{border-top:1px solid #bbb;padding-top:7px}
+}
+
+/* ==================== v126: раздел «Персонал» ==================== */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;align-items:start;margin-bottom:6px}
+.team-card{background:var(--glass-hi);border:1px solid var(--glass-border);border-radius:12px;
+  padding:13px 15px 6px;box-shadow:0 2px 10px rgba(20,12,4,.06);min-width:0}
+.team-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  border-bottom:1px solid rgba(120,95,60,.18);padding-bottom:9px;margin-bottom:9px}
+.team-head b{font-size:14.5px;color:var(--navy);line-height:1.25;display:block}
+.team-note{font-size:11.5px;color:var(--mut);margin-top:3px;line-height:1.3}
+.team-count{font-size:23px;font-weight:700;color:var(--copper);white-space:nowrap;line-height:1}
+.team-count span{font-size:11px;font-weight:600;color:var(--mut);margin-left:3px}
+.team-cities{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.team-city{font-size:11px;color:var(--mut);background:rgba(120,95,60,.09);border-radius:99px;padding:2px 9px}
+.team-city i{font-style:normal;font-weight:700;color:var(--navy);margin-left:3px}
+.team-table{width:100%;border:none;background:none;box-shadow:none;border-radius:0}
+.team-table td{padding:4px 0;border:none;font-size:12.5px;vertical-align:top;background:none !important}
+.team-table tr + tr td{border-top:1px solid rgba(120,95,60,.10)}
+.team-table .tm-fio{font-weight:700;color:var(--ink);white-space:nowrap;width:1%;padding-right:10px}
+.team-table .tm-role{color:var(--mut);line-height:1.3}
+.tm-city{color:var(--copper);font-size:11.5px;white-space:nowrap;text-align:right;width:1%;padding-left:8px}
+.hire-table td,.hire-table th{font-size:13px}
+.hire-table .ctr{text-align:center}
+.hire-table .st{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:99px;font-weight:600}
+.contr-table td{vertical-align:top;font-size:13px}
+.contr-person{display:flex;flex-direction:column;line-height:1.25;margin-bottom:5px}
+.contr-person:last-child{margin-bottom:0}
+.contr-person b{font-size:12.5px}
+.contr-person span{font-size:11px;color:var(--mut)}
+.dim-note{font-size:12px;color:var(--mut);margin-top:12px}
+/* Печать: карточки состава не рвутся, длинные таблицы – рвутся по строкам,
+   иначе они уезжают на новый лист целиком и оставляют полстраницы пустыми */
+@media print{
+  html.pf-on .team-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:9px;margin-bottom:0}
+  html.pf-on .team-card{break-inside:avoid;background:#fff !important;border:1px solid #bbb !important;padding:9px 11px 4px}
+  html.pf-on .team-head{padding-bottom:6px;margin-bottom:6px}
+  html.pf-on .team-head b{font-size:12.5px}
+  html.pf-on .team-note{font-size:10px}
+  html.pf-on .team-count{font-size:18px}
+  html.pf-on .team-cities{margin-bottom:5px}
+  html.pf-on .team-table td{font-size:11px;padding:2.5px 0}
+  html.pf-on .team-table .tm-city,html.pf-on .contr-table .tm-city{font-size:10px}
+  /* специалисты подрядчика в печати идут строкой, а не столбиком: экономит лист */
+  html.pf-on .contr-person{display:inline;margin:0}
+  html.pf-on .contr-person + .contr-person::before{content:" · "}
+  html.pf-on .contr-person b{font-size:11px}
+  html.pf-on .contr-person span{font-size:10px;margin-left:3px}
+  html.pf-on .contr-table td,html.pf-on .hire-table td,html.pf-on .hire-table th{font-size:11.5px;padding:3px 7px}
+  html.pf-on .kpis-4 .kpi{padding:8px 11px}
+  html.pf-on .collapsible-body > .plain{font-size:11.5px;margin-bottom:5px}
+  html.pf-on .contr-table,html.pf-on .hire-table{break-inside:auto !important}
+  html.pf-on .contr-table tr,html.pf-on .hire-table tr{break-inside:avoid}
+}
+
+/* v127: состав организации в карточке сворачивается */
+.team-head{width:100%;display:flex;align-items:flex-start;gap:10px;border:0;background:none;
+  text-align:left;font:inherit;color:inherit;cursor:pointer}
+.team-head-main{flex:1;min-width:0}
+.team-chev{flex:none;align-self:center;color:var(--copper);font-size:17px;line-height:1}
+.team-head:hover b{color:var(--copper)}
+.team-more{font-size:11px;color:var(--copper);margin-left:auto;align-self:center}
+.team-body.is-off{display:none}
+.team-card:has(.team-body.is-off) .team-cities{margin-bottom:2px}
+@media print{
+  html.pf-on .team-body.is-off{display:block !important}
+  html.pf-on .team-chev,html.pf-on .team-more{display:none !important}
+}
+html.pf-sim .team-body.is-off{display:block !important}
+html.pf-sim .team-chev,html.pf-sim .team-more{display:none !important}
+
+/* ==== v132: печать, разделы без права на разбивку ====
+   Схема лицензий при широкой раскладке растёт по высоте вместе с шириной, и раздел
+   перестаёт помещаться на лист. В печати высоту схемы ограничиваем. */
+@media print{
+  html.pf-on .lic-map{max-height:430px;display:flex;align-items:flex-start;justify-content:center}
+  html.pf-on .lic-map img{max-height:430px;width:auto;max-width:100%;height:auto;object-fit:contain}
+  /* Усиление команды и подрядчики в печати идут в две колонки: так «Персонал» ложится на лист */
+  html.pf-on .pers-cols{display:grid;
+    grid-template-columns:minmax(0,0.62fr) minmax(0,1.05fr) minmax(0,1.55fr);
+    gap:10px;align-items:start}
+  html.pf-on .pers-cols > *{margin:0 !important;break-inside:avoid;min-width:0}
+  html.pf-on .pers-cols .pc-h{margin:0 0 6px}
+  html.pf-on .pers-cols .split{grid-template-columns:minmax(0,1fr) !important;gap:6px}
+  html.pf-on .team-table td{padding:2px 0}
+  /* Подписи кольцевой диаграммы стоят рядом с кругом, а не под ним */
+  html.pf-on .eq-struct .donut-wrap{flex-wrap:nowrap !important;gap:10px !important}
+  html.pf-on .eq-struct .donut-legend span{white-space:normal !important;overflow:visible !important}
+  /* Номер листа не должен читаться поверх таблицы */
+  html.pf-on .pf-head .pf-num{background:#fff;padding:1px 6px;border-radius:5px}
+}
+
+/* Подпись на титуле идёт одной строкой прописными: «СТАТУС ПРОЕКТА ПИНИГИНО НА <дата>» */
+.print-cover .pc-band{text-transform:uppercase}
+
+/* ==== v133: плотная печать ====
+   Разделы, которым нельзя разъезжаться на два листа, задают масштаб всему документу.
+   Плотнее строки и отступы – и тот же материал ложится на лист при более широком
+   шрифте, то есть весь документ печатается крупнее. */
+@media print{
+  html.pf-on td,html.pf-on th{padding:3.6px 8px}
+  html.pf-on h2{margin:9px 0 5px}
+  html.pf-on h3{margin:6px 0 4px}
+  html.pf-on .as-of{margin:0 0 5px}
+  html.pf-on .lede{margin:0 0 7px}
+  html.pf-on .dim-note{margin:7px 0 0}
+  html.pf-on .kpis{gap:7px;margin-bottom:8px}
+  html.pf-on .kpi{padding:7px 10px}
+  html.pf-on .ems-table th,html.pf-on .ems-table td{padding:2.4px 9px}
+  html.pf-on .opr-card{padding:6px 9px}
+  html.pf-on .opr-card li,html.pf-on .opr-card .opr-item{margin-bottom:4px}
+  html.pf-on .contr-person{margin-bottom:2px;line-height:1.15}
+  html.pf-on .team-table td{padding:1.2px 0;font-size:10.4px}
+  html.pf-on .kpi-cap{margin-bottom:2px}
+  html.pf-on .collapsible-head{padding:5px 10px}
+  html.pf-on .collapsible-title{margin:0}
+  html.pf-on .collapsible-body{padding:0 10px 8px}
+  html.pf-on .notebox{padding:8px 10px}
+}
+
+/* ==== v134: общий документ, свой масштаб на раздел ====
+   Ширина раскладки живёт на содержимом раздела, а разрыв страницы – на самом разделе.
+   Держать масштаб на элементе с разрывом нельзя: браузер разбивает такой блок по
+   неотмасштабированной высоте и вставляет между разделами лишний пустой лист. */
+html.pf-sim .print-section > .content{width:var(--pf-sw, auto) !important}
+@media print{ html.pf-on .print-section > .content{width:var(--pf-sw, auto) !important} }
+@media print{
+  html.pf-on .print-all .print-section{break-before:auto !important;page-break-before:auto !important}
+  html.pf-on .pf-sec-first{break-before:page;page-break-before:always}
+}
+
+/* ==== v135: печатные правила действуют и на замере ====
+   Раскладку браузер считает в экранном режиме (класс pf-sim), а печатает в печатном.
+   Правило, описанное только в @media print, на замер не влияет: планировщик считает
+   одну вёрстку, а на лист выходит другая, и листы разъезжаются. Поэтому каждое
+   печатное правило продублировано для pf-sim; разрывы страниц и масштаб пропущены. */
+html.pf-sim .sidebar{display:none !important}
+html.pf-sim .shell{display:block !important}
+html.pf-sim .main{margin-left:0 !important;width:1400px !important;max-width:none !important;padding:0 !important}
+html.pf-sim .ov-top{grid-template-columns:minmax(0,1fr) auto !important}
+html.pf-sim .ov-top .lic-all{width:auto !important}
+html.pf-sim .ov-top > .map-frame{max-height:none !important}
+html.pf-sim .ov-summary{grid-template-columns:1.2fr 1.35fr 0.8fr 1fr 1.25fr 1.2fr !important}
+html.pf-sim .sum-item{border-left:1px solid var(--line) !important}
+html.pf-sim .sum-item:first-child{border-left:none !important}
+html.pf-sim .ov-top{grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;align-items:stretch !important}
+html.pf-sim .ov-top > .map-frame, html.pf-sim .ov-top > .map-frame.map-fit{width:100% !important;height:auto !important;aspect-ratio:1040/814 !important;align-self:start !important}
+html.pf-sim .ov-top > .lic-list{height:100% !important;min-width:0}
+html.pf-sim .ov-top .lic-all{width:100% !important;height:100% !important}
+html.pf-sim .pf-page-mark{display:block;position:absolute;right:0;margin-top:2px;font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.02em;z-index:4}
+html.pf-sim p, html.pf-sim li{orphans:3;widows:3}
+html.pf-sim .topbar{display:none !important}
+html.pf-sim .content > .as-of{padding-right:120px}
+html.pf-sim .pf-first{display:block}
+html.pf-sim .pf-break{display:block}
+html.pf-sim .pf-mark-line{text-align:right;font-size:11px;font-weight:700;color:var(--mut);margin:0 0 4px}
+html.pf-sim .pf-page-mark{display:none !important}
+html.pf-sim .pf-abs-mark{display:block;position:absolute;right:0;font-size:11px;font-weight:700;color:var(--mut);z-index:4}
+html.pf-sim .opr-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important}
+html.pf-sim .main{will-change:auto}
+html.pf-sim .pf-mark-line{text-align:left;font-size:14px;font-weight:700;color:#6B4A34;margin:0 0 6px}
+html.pf-sim .print-stamp{display:flex !important;position:fixed;top:0;right:0;z-index:9;flex-direction:column;align-items:center;gap:2px}
+html.pf-sim .print-stamp img{width:46px;height:46px;border-radius:50%}
+html.pf-sim .print-stamp span{font-size:10px;font-weight:700;letter-spacing:.06em;color:#6B4A34;font-family:Georgia,"Times New Roman",serif}
+html.pf-sim .content{padding-top:2mm}
+html.pf-sim .pf-stamp{display:flex;position:absolute;right:0;flex-direction:column;align-items:center;gap:1px;z-index:9}
+html.pf-sim .pf-stamp img{width:42px;height:42px;border-radius:50%}
+html.pf-sim .pf-stamp span{font-size:9.5px;font-weight:700;letter-spacing:.06em;color:#6B4A34;font-family:Georgia,"Times New Roman",serif}
+html.pf-sim .pf-foot{display:block;position:absolute;right:0;font-size:12px;font-weight:700;color:#6B4A34;z-index:9}
+html.pf-sim .print-stamp{display:none !important}
+html.pf-sim .pf-first, html.pf-sim .pf-break{display:block}
+html.pf-sim .pf-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;min-height:44px}
+html.pf-sim .pf-head .pf-mark-line{margin:0;text-align:left;font-size:14px;font-weight:700;color:#6B4A34}
+html.pf-sim .pf-head .pf-stamp{display:flex;position:static;flex-direction:column;align-items:center;gap:1px}
+html.pf-sim .pf-head{align-items:flex-start}
+html.pf-sim .pf-num{margin-left:auto;margin-right:10px;font-size:13px;font-weight:700;color:#6B4A34;white-space:nowrap}
+html.pf-sim .pf-foot{display:none !important}
+html.pf-sim .pf-head{position:relative}
+html.pf-sim .pf-head .pf-foot{display:block;position:absolute;right:0;top:calc(var(--pf-page, 900px) - 34px);font-size:12px;font-weight:700;color:#6B4A34}
+html.pf-sim .pf-head .pf-num{display:block;position:absolute;right:0;font-size:12.5px;font-weight:700;color:#6B4A34;z-index:9}
+html.pf-sim .pf-num-abs{display:block;position:absolute;right:0}
+html.pf-sim .pf-stamp .pf-num{display:block;font-style:normal;font-size:11px;font-weight:700;color:#6B4A34;margin-top:1px}
+html.pf-sim .pf-num-abs{display:none !important}
+html.pf-sim .pf-stamp .pf-num{position:static}
+html.pf-sim .pf-num-inner{display:block;position:absolute;right:0;font-size:12.5px;font-weight:700;color:#6B4A34;z-index:9}
+html.pf-sim .content{overflow:visible !important}
+html.pf-sim .pf-head .pf-num{background:#fff;padding:1px 5px;border-radius:6px}
+html.pf-sim .collapsible-body.is-off, html.pf-sim .kpi-expand-body.is-off, html.pf-sim .gantt-sub-wrap.is-off, html.pf-sim .apps-panel.is-off{display:block !important}
+html.pf-sim .collapsible-preview.is-off{display:none !important}
+html.pf-sim .main{width:var(--pf-w,1400px) !important}
+html.pf-sim .pf-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;min-height:58px;border-bottom:1.3px solid #8A6A4E;padding-bottom:7px;margin-bottom:14px}
+html.pf-sim .pf-head .pf-mark-line{margin:0;text-align:left;font-size:19px;font-weight:700;color:#5A1F20;letter-spacing:.01em;align-self:center}
+html.pf-sim .pf-head .pf-stamp{display:flex;position:static;flex-direction:column;align-items:center;gap:2px;margin-left:auto}
+html.pf-sim .pf-head .pf-stamp img{width:70px;height:70px;border-radius:50%}
+html.pf-sim .pf-head .pf-stamp span{font-size:11px;font-weight:700;letter-spacing:.06em;color:#6B4A34}
+html.pf-sim .pf-head .pf-num{margin:0;font-size:13px;font-weight:700;color:#6B4A34;background:none;padding:0}
+/* название раздела уже стоит в шапке – под ней не дублируем */ html.pf-sim .content > h1{display:none !important}
+html.pf-sim .content > .as-of{padding-right:0;margin-top:0}
+html.pf-sim h2{font-size:17px;margin:15px 0 7px}
+html.pf-sim h3, html.pf-sim .sec-h{font-size:15px}
+html.pf-sim .as-of{font-size:13px}
+html.pf-sim .lede{font-size:16px}
+html.pf-sim .plain, html.pf-sim .notebox li, html.pf-sim .opr-list li{font-size:14px}
+html.pf-sim table{font-size:12.5px}
+html.pf-sim td, html.pf-sim th{padding:5.5px 8px;font-size:12.5px}
+html.pf-sim .kpi .cap{font-size:12.5px}
+html.pf-sim .kpi .sub{font-size:11.5px}
+html.pf-sim .pf-head{align-items:center}
+html.pf-sim .pf-head .pf-num{display:block;position:static;margin-left:auto;margin-right:12px;font-size:13px;font-weight:700;color:#6B4A34;background:none;padding:0;white-space:nowrap}
+html.pf-sim .pf-head .pf-stamp{margin-left:0}
+html.pf-sim .pf-num-inner{top:auto}
+html.pf-sim .gantt-sub-wrap.is-off.gantt-sub-screen{display:none !important}
+html.pf-sim .ov-top > .map-frame, html.pf-sim .ov-top > .map-frame.map-fit{align-self:stretch !important;position:relative;width:100% !important;height:auto !important;aspect-ratio:auto !important;background:#DBD2C3}
+html.pf-sim .ov-top > .map-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center}
+html.pf-sim .pf-head .pf-num{display:block;position:absolute;right:0;margin:0;padding:0;background:none;font-size:13px;font-weight:700;color:#6B4A34;white-space:nowrap;z-index:9}
+html.pf-sim .pf-head .pf-stamp{margin-left:auto}
+html.pf-sim .pf-num-inner{display:block;position:absolute;right:0;font-size:13px;font-weight:700;color:#6B4A34;z-index:9}
+html.pf-sim .pf-spacer{display:block;visibility:hidden}
+html.pf-sim .pf-num-page{display:block;position:absolute;right:0;font-size:13px;font-weight:700;color:#6B4A34;white-space:nowrap;z-index:9}
+html.pf-sim .kpis-pf .kpi .val{text-align:center}
+html.pf-sim .kpis-pf .kpi .val .pf-plan{font-size:1em}
+html.pf-sim .collapsible{border:none !important;background:none !important;padding:0 !important}
+html.pf-sim .collapsible-head{border-top:1px solid #bbb;padding-top:7px}
+html.pf-sim .team-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:9px;margin-bottom:0}
+html.pf-sim .team-card{background:#fff !important;border:1px solid #bbb !important;padding:9px 11px 4px}
+html.pf-sim .team-head{padding-bottom:6px;margin-bottom:6px}
+html.pf-sim .team-head b{font-size:12.5px}
+html.pf-sim .team-note{font-size:10px}
+html.pf-sim .team-count{font-size:18px}
+html.pf-sim .team-cities{margin-bottom:5px}
+html.pf-sim .team-table td{font-size:11px;padding:2.5px 0}
+html.pf-sim .team-table .tm-city, html.pf-sim .contr-table .tm-city{font-size:10px}
+/* специалисты подрядчика в печати идут строкой, а не столбиком: экономит лист */ html.pf-sim .contr-person{display:inline;margin:0}
+html.pf-sim .contr-person + .contr-person::before{content:" · "}
+html.pf-sim .contr-person b{font-size:11px}
+html.pf-sim .contr-person span{font-size:10px;margin-left:3px}
+html.pf-sim .contr-table td, html.pf-sim .hire-table td, html.pf-sim .hire-table th{font-size:11.5px;padding:3px 7px}
+html.pf-sim .kpis-4 .kpi{padding:8px 11px}
+html.pf-sim .collapsible-body > .plain{font-size:11.5px;margin-bottom:5px}
+html.pf-sim .team-body.is-off{display:block !important}
+html.pf-sim .team-chev, html.pf-sim .team-more{display:none !important}
+html.pf-sim .lic-map{max-height:430px;display:flex;align-items:flex-start;justify-content:center}
+html.pf-sim .lic-map img{max-height:430px;width:auto;max-width:100%;height:auto;object-fit:contain}
+/* Усиление команды и подрядчики в печати идут в две колонки: так «Персонал» ложится на лист */ html.pf-sim .pers-cols{display:grid;grid-template-columns:minmax(0,0.62fr) minmax(0,1.05fr) minmax(0,1.55fr);gap:10px;align-items:start}
+html.pf-sim .pers-cols > *{margin:0 !important;min-width:0}
+html.pf-sim .pers-cols .pc-h{margin:0 0 6px}
+html.pf-sim .pers-cols .split{grid-template-columns:minmax(0,1fr) !important;gap:6px}
+html.pf-sim .team-table td{padding:2px 0}
+/* Подписи кольцевой диаграммы стоят рядом с кругом, а не под ним */ html.pf-sim .eq-struct .donut-wrap{flex-wrap:nowrap !important;gap:10px !important}
+html.pf-sim .eq-struct .donut-legend span{white-space:normal !important;overflow:visible !important}
+/* Номер листа не должен читаться поверх таблицы */ html.pf-sim .pf-head .pf-num{background:#fff;padding:1px 6px;border-radius:5px}
+html.pf-sim td, html.pf-sim th{padding:3.6px 8px}
+html.pf-sim h2{margin:9px 0 5px}
+html.pf-sim h3{margin:6px 0 4px}
+html.pf-sim .as-of{margin:0 0 5px}
+html.pf-sim .lede{margin:0 0 7px}
+html.pf-sim .dim-note{margin:7px 0 0}
+html.pf-sim .kpis{gap:7px;margin-bottom:8px}
+html.pf-sim .kpi{padding:7px 10px}
+html.pf-sim .ems-table th, html.pf-sim .ems-table td{padding:2.4px 9px}
+html.pf-sim .opr-card{padding:6px 9px}
+html.pf-sim .opr-card li, html.pf-sim .opr-card .opr-item{margin-bottom:4px}
+html.pf-sim .contr-person{margin-bottom:2px;line-height:1.15}
+html.pf-sim .team-table td{padding:1.2px 0;font-size:10.4px}
+html.pf-sim .kpi-cap{margin-bottom:2px}
+html.pf-sim .collapsible-head{padding:5px 10px}
+html.pf-sim .collapsible-title{margin:0}
+html.pf-sim .collapsible-body{padding:0 10px 8px}
+html.pf-sim .notebox{padding:8px 10px}
+html.pf-sim .print-section > .content{width:var(--pf-sw, auto) !important}
+
+/* ==== v136: колонтитул одного размера на всех листах ====
+   Масштаб у разделов разный, а название раздела, номер листа и знак должны печататься
+   одинаково. Размеры делятся на масштаб через --pf-inv, поэтому на бумаге они постоянны.
+   Номер листа – строго в правом нижнем углу. */
+@media print{
+  html.pf-on .pf-head .pf-num,html.pf-on .pf-num-inner{
+    left:auto;right:0;margin-left:0;text-align:right;
+    font-size:calc(13px * var(--pf-inv,1));padding:calc(1px * var(--pf-inv,1)) calc(6px * var(--pf-inv,1))}
+  html.pf-on .pf-head .pf-mark-line{font-size:calc(16.5px * var(--pf-inv,1))}
+  html.pf-on .pf-head .pf-stamp img{width:calc(46px * var(--pf-inv,1));height:calc(46px * var(--pf-inv,1))}
+  html.pf-on .pf-head .pf-stamp span{font-size:calc(9px * var(--pf-inv,1))}
+  html.pf-on .pf-head{min-height:calc(28px * var(--pf-inv,1));gap:calc(12px * var(--pf-inv,1));
+    margin-bottom:calc(6px * var(--pf-inv,1))}
+}
+html.pf-sim .pf-head .pf-num,html.pf-sim .pf-num-inner{
+  left:auto;right:0;margin-left:0;text-align:right;
+  font-size:calc(13px * var(--pf-inv,1));padding:calc(1px * var(--pf-inv,1)) calc(6px * var(--pf-inv,1))}
+html.pf-sim .pf-head .pf-mark-line{font-size:calc(16.5px * var(--pf-inv,1))}
+html.pf-sim .pf-head .pf-stamp img{width:calc(46px * var(--pf-inv,1));height:calc(46px * var(--pf-inv,1))}
+html.pf-sim .pf-head .pf-stamp span{font-size:calc(9px * var(--pf-inv,1))}
+html.pf-sim .pf-head{min-height:calc(28px * var(--pf-inv,1));gap:calc(12px * var(--pf-inv,1));
+  margin-bottom:calc(6px * var(--pf-inv,1))}
+
+/* ==== v137: титул одной строкой, высота обложки с запасом ====
+   Обложка во всю печатную высоту переполняла лист у пользователей, чей браузер
+   забирает часть высоты под свои колонтитулы, и после титула выходил пустой лист. */
+@media print{
+  .print-cover{height:181mm !important}
+  .print-cover .pc-text{width:calc(67% - 26mm)}
+  .print-cover .pc-title span{display:block}
+  .print-cover .pc-title{font-family:Georgia,"Times New Roman",serif;font-weight:700;
+    font-size:20pt;line-height:1.25;color:#fff;white-space:nowrap}
+  .print-cover .pc-title .pc-l1{white-space:nowrap;color:#fff}
+  .print-cover .pc-title .pc-l2{white-space:nowrap;color:#BF8A42;margin-top:2mm}
+}
+/* Карточки состава: ширина по числу людей, а не поровну */
+@media print{
+  html.pf-on .team-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1.15fr) minmax(0,0.7fr) !important}
+}
+html.pf-sim .team-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1.15fr) minmax(0,0.7fr) !important}
+
+/* ==== v139: титул, карта лицензий ==== */
+@media print{
+  /* Знак в левом верхнем углу, название по центру прописными, дата в левом нижнем */
+  .print-cover .pc-logo{top:10mm;left:14mm;right:auto;width:26mm;height:26mm}
+  .print-cover .pc-text{left:16mm;width:calc(67% - 30mm);text-align:center}
+  /* Подпись под знаком в левом верхнем углу */
+  .print-cover .pc-mark{position:absolute;top:38mm;left:14mm;width:26mm;text-align:center;
+    font-family:Georgia,"Times New Roman",serif;font-size:9pt;font-weight:700;
+    letter-spacing:.06em;color:#D9CDB6}
+  /* Название в две строки: «Статус проекта» золотом, «Пинигино» белым; черта –
+     по центру самой широкой строки, поэтому блок сжат по содержимому. */
+  .print-cover .pc-title{display:inline-block;font-family:Georgia,"Times New Roman",serif;
+    font-weight:700;line-height:1.24;text-transform:uppercase;letter-spacing:.09em;
+    white-space:nowrap;text-align:center}
+  .print-cover .pc-title-top{display:block;font-size:15pt;letter-spacing:.20em;color:#D2A05A}
+  .print-cover .pc-title-main{display:block;font-size:30pt;letter-spacing:.10em;color:#fff;
+    margin-top:2.5mm}
+  .print-cover .pc-rule{display:block;width:46mm;height:1.1mm;background:#BF8A42;
+    margin:6mm auto 0;border-radius:1mm}
+  .print-cover .pc-date{position:absolute;left:16mm;bottom:13mm;font-family:Georgia,"Times New Roman",serif;
+    font-size:13pt;letter-spacing:.07em;color:#BF8A42}
+
+  /* Карта лицензий: без трансформации, иначе браузер печатает её растром с экрана и она мылится */
+  html.pf-on .lic-map img{transform:none !important;image-rendering:auto}
+}
+html.pf-sim .lic-map img{transform:none !important}
+
+/* Обеспечение участка: длинная колонка «Оценка» переносится, остальное в одну строку,
+   иначе таблица шире листа и браузер ужимает весь документ. */
+.stock-table{width:100%;table-layout:fixed}
+.stock-table th,.stock-table td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stock-table th:first-child,.stock-table td:first-child{white-space:normal;width:26%}
+.stock-table th:nth-child(2),.stock-table td:nth-child(2){width:12%}
+.stock-table th:nth-child(3),.stock-table td:nth-child(3){width:14%}
+.stock-table th:last-child,.stock-table td:last-child{white-space:normal;width:48%;overflow:visible}
+
+/* v140. ГРР, первый лист: вводный абзац в одну строку, чтобы под диаграммами
+   поместилась производственная программа. */
+html.pf-on .lede-wide,
+html.pf-sim .lede-wide{max-width:none}
+
+/* v141. Карта лицензий при печати: коричневые поля по бокам и рамка контейнера убраны,
+   карта стоит по центру отведённого ей места и занимает его целиком по высоте. */
+html.pf-on .lic-apps .lic-map,
+html.pf-sim .lic-apps .lic-map{display:flex;align-items:center;justify-content:center;
+  align-self:center;aspect-ratio:auto;height:auto;max-height:none;width:100%;padding:0;margin:0;
+  background:transparent;border:none;box-shadow:none;overflow:visible}
+html.pf-on .lic-apps .lic-map img,
+html.pf-sim .lic-apps .lic-map img{position:static;display:block;width:auto;height:auto;
+  max-width:100%;max-height:var(--lic-map-h,430px);object-fit:contain;border-radius:12px;
+  border:1px solid var(--glass-border)}
+
+/* v143: план/факт в блоках «Техника и обеспечение участка» (форма экономического управления) */
+.unit-sm{font-size:10px;color:var(--mut);font-weight:400}
+.dim-row td{color:var(--mut)}
+.stock-pf{table-layout:auto}
+.stock-pf th,.stock-pf td{width:auto;white-space:nowrap;overflow:visible}
+.stock-pf th:first-child,.stock-pf td:first-child,.stock-pf th:last-child,.stock-pf td:last-child{white-space:normal;width:auto}
+.stock-pf th:first-child,.stock-pf td:first-child{min-width:150px}
+.stock-pf td:last-child{min-width:170px}
+.downtime-pf td:first-child{white-space:nowrap}
+.bit-table{width:auto;min-width:60%}
+
+/* v143: закупки – реестр лотов и план потребности */
+.lots-table{font-size:12px}
+.lots-table th,.lots-table td{padding:5px 6px;vertical-align:top}
+.lots-table{table-layout:fixed;width:100%}
+.lots-table th{white-space:normal;font-size:11.5px;padding:5px 4px}
+.lots-table th.ctr,.lots-table td.ctr{text-align:center;white-space:nowrap;padding-left:2px;padding-right:2px}
+.lots-table th.ctr{white-space:normal;hyphens:manual}
+.lots-table .chip{font-size:11.5px;padding:1px 8px}
+.lots-table td:first-child{white-space:normal;font-size:11.5px}
+.d-plan{color:#0F8A3C;font-style:italic;font-weight:600}
+.d-fact{font-weight:600}
+.stage-bar{display:flex;gap:2px;margin:4px 0 0 2px}
+.stage-bar i{display:inline-block;width:7px;height:7px;border-radius:2px;background:#E4DACB}
+.stage-bar i.on{background:var(--navy)}
+.stage-legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;color:var(--mut);margin-top:8px}
+.stage-legend b{color:var(--navy);margin-right:2px}
+.lot-result{font-size:11.5px;color:var(--mut);margin-top:2px}
+.need-why{font-size:11.5px;color:var(--mut);font-weight:400;margin-top:1px}
+.need-flag{margin-top:3px;color:var(--warn);font-weight:600}
+.needs-sum{margin-top:10px;padding:8px 12px;border-radius:10px;background:rgba(116,136,63,.10);font-size:13px}
+
+/* Таблицы только для выгрузки в Excel: на экране и в печати скрыты */
+.export-only{display:none !important}
+
+/* ==== v148: обложка – знак справа сверху; плашки ГРР по центру; печать свёрнутых блоков ==== */
+@media print{
+  .print-cover .pc-logo{top:9mm;right:11mm;left:auto;width:26mm;height:26mm}
+  .print-cover .pc-mark{top:37mm;right:11mm;left:auto;width:26mm}
+  html.pf-on .collapsible.print-collapsed .collapsible-body{display:none !important}
+  html.pf-on .collapsible.print-collapsed .collapsible-action{display:none}
+}
+html.pf-sim .collapsible.print-collapsed .collapsible-body{display:none !important}
+.kpis-pf .kpi{text-align:center}
+.kpis-pf .kpi .val{justify-content:center}
+.lots-table td{padding:4px 6px;line-height:1.25}
+.lots-table .row-link{font-weight:600}
+.ov-top .lic-all .th-link{display:block;font-size:10.5px;font-weight:600;color:var(--copper);text-decoration:underline;text-underline-offset:2px;margin-bottom:1px;white-space:nowrap}
+.ov-top .lic-all .th-link:hover{color:var(--navy)}
+
+/* ==== v150: финансирование (пояснение к плашкам, подробности не печатаются), персонал в печати,
+   закупки (столбец ОПР/ГРР, строки генпроектировщика без переносов), план по станкам, протокол ГКЗ ==== */
+.fin-terms{font-size:12.5px;max-width:none;margin:10px 0 14px}
+.fin-terms b{color:var(--navy)}
+@media print{
+  html.pf-on .kpi-print-plain .kpi-expand-body{display:none !important}
+  .kpi-print-plain .kpi-expand-body{display:none !important}
+  .fin-terms{font-size:11.5px}
+}
+html.pf-sim .kpi-print-plain .kpi-expand-body{display:none !important}
+/* Персонал: вахта под карточкой ЯГРП – та же сетка, что у карточек (средняя колонка) */
+.shift-row{display:none}
+@media print{
+  html.pf-on .shift-row{display:grid !important;grid-template-columns:minmax(0,1.15fr) minmax(0,1.15fr) minmax(0,0.7fr);gap:9px;margin-top:8px;align-items:start}
+  html.pf-on .shift-row .pc-h{margin:0 0 6px}
+  html.pf-on .shift-row .kpis-mini{grid-template-columns:minmax(0,1fr)}
+}
+html.pf-sim .shift-row{display:grid !important;grid-template-columns:minmax(0,1.15fr) minmax(0,1.15fr) minmax(0,0.7fr);gap:9px;margin-top:8px;align-items:start}
+html.pf-sim .shift-row .pc-h{margin:0 0 6px}
+html.pf-sim .shift-row .kpis-mini{grid-template-columns:minmax(0,1fr)}
+/* Закупки: направление ОПР/ГРР */
+.dir-cell{white-space:nowrap;font-weight:700;color:var(--navy);font-size:11.5px}
+.lots-table .dir-cell{font-size:11px}
+/* Генпроектировщик: каждая строка описания – одной строкой в печати */
+.plain-wide{max-width:none}
+.ems-lines .ems-line{display:block}
+@media print{
+  html.pf-on .ems-lines .ems-line{white-space:nowrap;font-size:12px}
+}
+html.pf-sim .ems-lines .ems-line{white-space:nowrap;font-size:12px}
+/* План бурения по станкам: строки темпов приглушены */
+.rig-plan tr.dim-row td{font-size:11px;font-weight:400}
+.rig-plan tr.total td{font-weight:700}
+/* Протокол ГКЗ */
+.gkz-table{font-size:11.5px}
+.gkz-table th,.gkz-table td{padding:3px 6px;white-space:nowrap}
+.gkz-cond td{font-size:12px}
+.gkz-cond td:first-child{font-weight:600;color:var(--ink)}
+/* Заявки без оценки: компактные строки, чтобы таблица целиком вставала на лист */
+.req-table td{padding:4px 6px;line-height:1.25}
+@media print{ html.pf-on .req-table td{padding:3px 6px} }
+html.pf-sim .req-table td{padding:3px 6px}
+
+/* ==== v151: направление бюджета и статья затрат в закупках ==== */
+.dir-cell{white-space:nowrap;line-height:1.2}
+.dir-cell .dir-opr,.dir-cell .dir-grr,.dir-cell .dir-gok{display:block;font-weight:700;font-size:11.5px}
+.dir-cell .dir-opr{color:var(--navy)}
+.dir-cell .dir-grr{color:var(--teal)}
+.dir-cell .dir-gok{color:var(--mut)}
+.dir-cell i{display:block;font-style:normal;font-size:10px;color:var(--mut);font-weight:500}
+.need-ask{margin-top:3px;font-size:11px;color:var(--copper);font-weight:600}
+
+/* ==== v151: бюджет двух лет (полоса ГРР/ОПР и свод в 55 млн $) ==== */
+.b2y{margin-top:18px}
+.b2y-bar{display:flex;gap:4px;margin:4px 0 10px;border-radius:10px;overflow:hidden}
+.b2y-seg{padding:9px 12px;color:#fff;min-width:0;overflow:hidden;line-height:1.3;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center}
+.b2y-seg b{display:block;font-size:12px;letter-spacing:.06em;opacity:.9}
+.b2y-seg b em{font-style:normal;font-weight:600;opacity:.7;margin-left:4px}
+.b2y-seg span{display:block;font-size:16px;font-weight:700}
+.b2y-seg span small{font-size:11px;font-weight:600;opacity:.85}
+.b2y-grr{background:var(--teal)}
+.b2y-opr{background:var(--navy)}
+.b2y-rows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.b2y-row{background:var(--glass-hi);border:1px solid var(--glass-border);border-radius:10px;padding:8px 12px}
+.b2y-row.b2y-total{background:rgba(116,136,63,.10)}
+.b2y-cap{font-size:12px;font-weight:700;color:var(--ink)}
+.b2y-cap i{font-style:normal;font-weight:500;color:var(--mut);font-size:11px}
+.b2y-val{font-size:15px;font-weight:700;color:var(--navy);margin-top:2px}
+.b2y-val span{color:var(--mut);font-weight:500}
+.b2y-sub{font-size:11px;color:var(--mut);margin-top:1px}
+.budget-v2 .b-tot{font-weight:700;background:rgba(116,136,63,.07)}
+@media screen and (max-width:1100px){html:not(.pf-on) .b2y-rows{grid-template-columns:1fr}}
+@media print{
+  html.pf-on .b2y-bar{margin:3px 0 7px}
+  html.pf-on .b2y-seg{padding:6px 10px}
+  html.pf-on .b2y-seg span{font-size:13.5px}
+  html.pf-on .b2y-rows{gap:7px}
+  html.pf-on .b2y-row{padding:6px 10px}
+}
+html.pf-sim .b2y-bar{margin:3px 0 7px}
+html.pf-sim .b2y-seg{padding:6px 10px}
+html.pf-sim .b2y-seg span{font-size:13.5px}
+html.pf-sim .b2y-rows{gap:7px}
+html.pf-sim .b2y-row{padding:6px 10px}
+.th-two .th-sub{display:block;font-size:9.5px;font-weight:500;color:var(--mut)}
+
+/* ==== v153: пять плашек финансирования в одну строку ==== */
+.fin-kpis5{grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.fin-kpis5 .kpi{padding:10px 11px}
+.fin-kpis5 .kpi .cap{font-size:11px;line-height:1.25}
+.fin-kpis5 .kpi .val{font-size:22px}
+.fin-kpis5 .kpi .val small{font-size:11px}
+.fin-kpis5 .kpi .sub{font-size:10.5px;line-height:1.25;margin-top:2px}
+@media screen and (max-width:1180px){html:not(.pf-on) .fin-kpis5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media screen and (max-width:720px){html:not(.pf-on) .fin-kpis5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{
+  html.pf-on .fin-kpis5{grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+  html.pf-on .fin-kpis5 .kpi{padding:7px 9px}
+  html.pf-on .fin-kpis5 .kpi .val{font-size:18px}
+}
+html.pf-sim .fin-kpis5{grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+html.pf-sim .fin-kpis5 .kpi{padding:7px 9px}
+html.pf-sim .fin-kpis5 .kpi .val{font-size:18px}
+
+/* ==== v153: ссылка «Детализация» над таблицей лицензий (относится ко всем столбцам) ==== */
+.ov-top > .lic-list{display:flex;flex-direction:column;gap:0}
+.ov-top .lic-detail-link{flex:0 0 auto;display:flex;justify-content:flex-end;margin-bottom:3px}
+.ov-top .lic-detail-link .th-link{font-size:11px;font-weight:600;color:var(--copper);
+  text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+.ov-top .lic-detail-link .th-link:hover{color:var(--navy)}
+.ov-top .lic-all{flex:1 1 auto}
+
+/* ==== v154: подпись «показать состав» – кнопка ==== */
+.team-more{background:none;border:0;padding:0;font:inherit;font-size:11px;color:var(--copper);
+  margin-left:auto;align-self:center;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.team-more:hover{color:var(--navy)}
+
+/* ==== v154: бюджет двух лет – пять плашек в одну линию ==== */
+.b2y-five{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,.62fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+  gap:8px;align-items:stretch;margin:4px 0 0}
+.b2y-five .b2y-seg{border-radius:10px;padding:8px 10px}
+.b2y-five .b2y-row{margin:0}
+@media screen and (max-width:1180px){html:not(.pf-on) .b2y-five{grid-template-columns:repeat(2,minmax(0,1fr))}
+html:not(.pf-on) .b2y-five .b2y-row.b2y-total{grid-column:1 / -1}
+}
+@media print{
+  html.pf-on .b2y-five{gap:6px}
+  html.pf-on .b2y-five .b2y-seg{padding:6px 9px}
+}
+html.pf-sim .b2y-five{gap:6px}
+html.pf-sim .b2y-five .b2y-seg{padding:6px 9px}
+
+/* ==== v155: протоколы и справки – две группы, переносятся целиком ==== */
+.docs-group{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.docs-line .docs-lbl{margin-right:2px;min-width:80px}
+.docs-line .docs-div{display:none}
+
+/* ==== v158: план бурения по станкам – участок рядом с названием станка ==== */
+.rig-plan .rig-site{display:block;font-style:normal;font-size:10.5px;font-weight:500;color:var(--mut)}
+/* Второе содержание Au в той же ячейке (JORC сверху, ГКЗ под ним) */
+.ov-top .lic-all .au-second{display:block;margin-top:3px}
+.rig-plan th.band{background:rgba(116,136,63,.10);font-size:11.5px}
+.rig-plan th.band em{font-style:normal;font-weight:600;color:var(--mut);font-size:10.5px}
+
+/* ==== v158: блоки «Почему ЕМС» и «Финальные параметры» компактнее в печати ==== */
+@media print{
+  html.pf-on .ems-boxes .notebox{padding:7px 11px}
+  html.pf-on .ems-boxes li{font-size:12px !important;line-height:1.3;margin:1px 0}
+  html.pf-on .ems-boxes b{font-size:12.5px !important;margin-bottom:3px !important}
+}
+html.pf-sim .ems-boxes .notebox{padding:7px 11px}
+html.pf-sim .ems-boxes li{font-size:12px !important;line-height:1.3;margin:1px 0}
+html.pf-sim .ems-boxes b{font-size:12.5px !important;margin-bottom:3px !important}
+
+/* ==== v159: примечание к итогам 2028 – одной строкой ==== */
+.res-note-1line{white-space:nowrap;font-size:clamp(7.5px,0.63vw,11px);max-width:none;letter-spacing:-0.1px}
+@media print{ html.pf-on .res-note-1line{font-size:10.5px} }
+html.pf-sim .res-note-1line{font-size:10.5px}
+
+/* ==== v160: таблица Обзора – категории запасов и ресурсов отдельными столбцами ==== */
+.ov-top .lic-all .c-cat{font-size:10px;font-weight:600;color:var(--mut);text-align:left;white-space:nowrap}
+.ov-top .lic-all td.cat{font-size:10px;color:var(--mut);text-align:left;white-space:nowrap;line-height:1.25}
+.ov-top .lic-all td.cat-tot{font-weight:700;color:var(--ink);font-size:9.5px;letter-spacing:.04em}
+.ov-top .lic-all td.num-tot{font-weight:700}
+.ov-top .lic-all .lic-2{display:block}
+.ov-top .lic-all tr.lic-det td{padding-top:2px;padding-bottom:2px}
+
+/* ==== v162: плашки ГРР – всё по центру, перенос только между «фактом /» и планом ==== */
+.kpis-pf .kpi{text-align:center;align-items:center}
+.kpis-pf .kpi .cap{text-align:center;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+.kpis-pf .kpi .val{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;
+  column-gap:6px;row-gap:0;white-space:normal}
+.kpis-pf .kpi .val .pf-a,.kpis-pf .kpi .val .pf-b{white-space:nowrap}
+.kpis-pf .kpi .val .pf-sep{margin-left:2px}
+.kpis-pf .kpi .sub{text-align:center;overflow-wrap:break-word}
+/* Плашка простоев набрана вручную – центрируем так же */
+.kpis-pf .kpi .val:not(:has(.pf-a)){display:block}
+
+/* ==== v164: карта держит свои пропорции, сводные плашки встают под ней ==== */
+/* На экране верхний блок – две колонки и два ряда: карта и плашки слева, таблица справа во всю высоту. */
+.ov-top:has(> .ov-summary){grid-template-rows:auto 1fr}
+.ov-top > .map-frame{grid-column:1;grid-row:1}
+.ov-top > .lic-list{grid-column:2;grid-row:1}
+/* Плашки – строкой во всю ширину под картой и таблицей, как и в печати */
+.ov-top > .ov-summary{grid-column:1 / -1;grid-row:2;margin-top:14px;align-self:start}
+@media screen and (max-width:1180px){
+  html:not(.pf-on) .ov-top > .map-frame,
+  html:not(.pf-on) .ov-top > .lic-list,
+  html:not(.pf-on) .ov-top > .ov-summary{grid-column:1;grid-row:auto}
+}
+/* В печати блок остаётся прежним: карта и таблица в ряд, плашки строкой под ними */
+@media print{
+  html.pf-on .ov-top > .map-frame{grid-column:1 !important;grid-row:1 !important}
+  html.pf-on .ov-top > .lic-list{grid-column:2 !important;grid-row:1 !important}
+  html.pf-on .ov-top > .ov-summary{grid-column:1 / -1 !important;grid-row:2 !important;margin-top:10px}
+}
+html.pf-sim .ov-top > .map-frame{grid-column:1 !important;grid-row:1 !important}
+html.pf-sim .ov-top > .lic-list{grid-column:2 !important;grid-row:1 !important}
+html.pf-sim .ov-top > .ov-summary{grid-column:1 / -1 !important;grid-row:2 !important;margin-top:10px}
+
+/* ==== v167: таблица Обзора – строки с годом крупнее и жирным, расшифровка мелким ==== */
+.ov-top .lic-all tr:not(.lic-det) > td.yr,
+.ov-top .lic-all tr:not(.lic-det) > td.cat,
+.ov-top .lic-all tr:not(.lic-det) > td.num:not(.c-au){font-size:12px;font-weight:700;color:var(--ink)}
+.ov-top .lic-all tr.lic-det > td{font-size:10px;font-weight:500;color:var(--mut);line-height:1.3}
+.ov-top .lic-all tr.lic-det > td.num{color:var(--ink)}
+.ov-top .lic-all td.cat-tot{font-size:12px;letter-spacing:0}
+
+/* ==== v167: пометка об актуализации Запасов и уточнение в заголовке ГРР ==== */
+.res-upd{margin:6px 0 12px;padding:8px 13px;border-radius:10px;font-size:12.5px;line-height:1.4;
+  background:rgba(193,122,44,.10);border:1px solid rgba(193,122,44,.30)}
+.res-upd b{color:var(--ink)}
+.res-upd span{display:block;color:var(--mut);font-size:11.5px;margin-top:2px}
+h1 .h1-note{font-size:13px;font-weight:600;color:var(--mut);margin-left:10px;letter-spacing:0}
+@media print{
+  html.pf-on .res-upd{margin:4px 0 8px;padding:5px 10px;font-size:11px}
+  html.pf-on h1 .h1-note{font-size:11px}
+}
+html.pf-sim .res-upd{margin:4px 0 8px;padding:5px 10px;font-size:11px}
+html.pf-sim h1 .h1-note{font-size:11px}
+/* Карта уже таблицы по высоте только на средних экранах – ставим её по центру колонки,
+   чтобы поля делились поровну сверху и снизу, а не копились под картой */
+.ov-top:has(> .map-fit) > .map-frame{align-self:center}
+@media print{ html.pf-on .ov-top > .map-frame{align-self:start !important} }
+html.pf-sim .ov-top > .map-frame{align-self:start !important}
+
+/* ==== v168: финансирование – два ряда плашек (поступления и оплата) ==== */
+.fin-row1{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.fin-row2{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:9px}
+.fin-row1 .kpi,.fin-row2 .kpi{padding:10px 12px}
+.fin-row1 .kpi .cap,.fin-row2 .kpi .cap{font-size:11.5px;line-height:1.25}
+.fin-row1 .kpi .val,.fin-row2 .kpi .val{font-size:24px}
+.fin-row1 .kpi .sub,.fin-row2 .kpi .sub{font-size:11px;line-height:1.25;margin-top:2px}
+@media screen and (max-width:1180px){
+  html:not(.pf-on) .fin-row1,html:not(.pf-on) .fin-row2{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media print{
+  html.pf-on .fin-row1{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  html.pf-on .fin-row2{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:7px}
+  html.pf-on .fin-row1 .kpi,html.pf-on .fin-row2 .kpi{padding:7px 9px}
+  html.pf-on .fin-row1 .kpi .val,html.pf-on .fin-row2 .kpi .val{font-size:19px}
+}
+html.pf-sim .fin-row1{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+html.pf-sim .fin-row2{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:7px}
+html.pf-sim .fin-row1 .kpi,html.pf-sim .fin-row2 .kpi{padding:7px 9px}
+html.pf-sim .fin-row1 .kpi .val,html.pf-sim .fin-row2 .kpi .val{font-size:19px}
+
+/* ==== v168: столбец Au не тянет таблицу вширь – длинные пометки переносятся ==== */
+.ov-top .lic-all th.c-au,.ov-top .lic-all td.c-au{width:118px;max-width:118px;white-space:normal}
+.ov-top .lic-all td.c-au .v-note{white-space:normal;line-height:1.25}
+
+/* ==== v169: пояснения под таблицами ГРР – каждая мысль одной строкой без переноса ==== */
+.pf-oneline{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media print{ html.pf-on .pf-oneline{font-size:11px} }
+html.pf-sim .pf-oneline{font-size:11px}
+/* Цифры во всех плашках ГРР на одной высоте: подпись занимает две строки даже когда она короткая */
+.kpis-pf .kpi .cap{min-height:2.4em;display:flex;align-items:center;justify-content:center}
+
+/* ==== v169: «Статус задач» плотнее в печати – раздел укладывается в два листа ==== */
+@media print{
+  html.pf-on .task-card{padding:6px 9px;margin-bottom:6px}
+  html.pf-on .task-head{margin-bottom:2px}
+  html.pf-on .task-head b{font-size:11.5px}
+  html.pf-on .task-body{font-size:11px;line-height:1.28}
+  html.pf-on .task-sub li{font-size:10.5px;line-height:1.25;margin:0}
+  html.pf-on .task-card .task-move{margin-top:4px}
+}
+html.pf-sim .task-card{padding:6px 9px;margin-bottom:6px}
+html.pf-sim .task-head{margin-bottom:2px}
+html.pf-sim .task-head b{font-size:11.5px}
+html.pf-sim .task-body{font-size:11px;line-height:1.28}
+html.pf-sim .task-sub li{font-size:10.5px;line-height:1.25;margin:0}
+html.pf-sim .task-card .task-move{margin-top:4px}
+@media print{
+  html.pf-on .status-top{margin-bottom:10px}
+  html.pf-on .docs-line{padding:5px 8px;gap:4px}
+  html.pf-on .doc-d{padding:2px 6px;font-size:10.5px}
+  html.pf-on .status-kpis-row .kpi{padding:6px 10px;min-width:150px}
+  html.pf-on .status-kpis-row .kpi .val{font-size:17px}
+  html.pf-on .zone-head{margin:4px 0 4px}
+}
+html.pf-sim .status-top{margin-bottom:10px}
+html.pf-sim .docs-line{padding:5px 8px;gap:4px}
+html.pf-sim .doc-d{padding:2px 6px;font-size:10.5px}
+html.pf-sim .status-kpis-row .kpi{padding:6px 10px;min-width:150px}
+html.pf-sim .status-kpis-row .kpi .val{font-size:17px}
+html.pf-sim .zone-head{margin:4px 0 4px}
+
+/* ==== v170: «Статус задач» целиком на двух листах – блок критичных вопросов плотнее ==== */
+@media print{
+  html.pf-on .crit-block p.plain{margin:0 0 5px}
+  html.pf-on .crit-block table td,html.pf-on .crit-block table th{padding:3px 7px;line-height:1.25}
+  html.pf-on .crit-block .collapsible{margin-top:6px}
+  html.pf-on .crit-block .collapsible-head{padding:4px 8px}
+  html.pf-on .crit-block .chip{padding:1px 6px}
+  html.pf-on .tab-print-title{margin-bottom:2px}
+}
+html.pf-sim .crit-block p.plain{margin:0 0 5px}
+html.pf-sim .crit-block table td,html.pf-sim .crit-block table th{padding:3px 7px;line-height:1.25}
+html.pf-sim .crit-block .collapsible{margin-top:6px}
+html.pf-sim .crit-block .collapsible-head{padding:4px 8px}
+html.pf-sim .crit-block .chip{padding:1px 6px}
+html.pf-sim .tab-print-title{margin-bottom:2px}
+
+/* ==== v171: цифры во всех восьми плашках ГРР на одной линии ====
+   Подпись сверху фиксированной высоты, число сразу под ней, пояснение прижато к низу плашки:
+   так и числа, и нижние строки совпадают по высоте в обеих группах, сколько бы строк ни занял текст. */
+.kpis-pf .kpi{justify-content:flex-start}
+.kpis-pf .kpi .sub{margin-top:auto;padding-top:3px}
+/* Выделенная плашка без рамки съезжала на пиксель вверх – рамка остаётся, но прозрачная */
+.kpis-pf .kpi.hl{border:1px solid transparent}
